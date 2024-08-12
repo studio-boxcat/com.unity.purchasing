@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
+using System.Threading.Tasks;
 using UnityEngine.Purchasing.Extension;
 
 namespace UnityEngine.Purchasing
@@ -147,7 +148,8 @@ namespace UnityEngine.Purchasing
             if (!StartUI<PurchaseFailureReason>(product, DialogType.Purchase, handleAllowPurchase))
             {
                 // Default non-UI FakeStore purchase behavior is to succeed
-                handleAllowPurchase(true, (PurchaseFailureReason)Enum.Parse(typeof(PurchaseFailureReason), "Unknown"));
+                // XXX: simulate a delay
+                Task.Delay(30).ContinueWith(_ => handleAllowPurchase(true, (PurchaseFailureReason)Enum.Parse(typeof(PurchaseFailureReason), "Unknown")));
             }
         }
 
