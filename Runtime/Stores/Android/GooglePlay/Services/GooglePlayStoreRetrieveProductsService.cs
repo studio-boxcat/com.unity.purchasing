@@ -50,7 +50,7 @@ namespace UnityEngine.Purchasing
 
         void OnProductsRetrievedWithPurchaseFetch(List<ProductDescription> retrievedProducts, IGoogleBillingResult billingResult)
         {
-            if (retrievedProducts.Count == 0 && billingResult.responseCode != GoogleBillingResponseCode.Ok)
+            if (billingResult != null && retrievedProducts.Count == 0 && billingResult.responseCode != GoogleBillingResponseCode.Ok)
             {
                 OnRetrieveProductsFailed(GoogleRetrieveProductsFailureReason.BillingServiceUnavailable, billingResult.responseCode);
                 return;
@@ -67,7 +67,7 @@ namespace UnityEngine.Purchasing
 
         void OnProductsRetrieved(List<ProductDescription> retrievedProducts, IGoogleBillingResult billingResult)
         {
-            if (retrievedProducts.Count == 0 && billingResult.responseCode != GoogleBillingResponseCode.Ok)
+            if (billingResult != null && retrievedProducts.Count == 0 && billingResult.responseCode != GoogleBillingResponseCode.Ok)
             {
                 OnRetrieveProductsFailed(GoogleRetrieveProductsFailureReason.BillingServiceUnavailable, billingResult.responseCode);
                 return;
@@ -121,15 +121,7 @@ namespace UnityEngine.Purchasing
 
         bool IsPurchasedProductDeferred(Product product)
         {
-            var tmpProduct = CreateNewProductUnifiedReceipt(product);
-            return m_GooglePlayStoreExtensions.IsPurchasedProductDeferred(tmpProduct);
-        }
-
-        static Product CreateNewProductUnifiedReceipt(Product product)
-        {
-            var unifiedReceipt = UnifiedReceiptFormatter.FormatUnifiedReceipt(product.receipt,
-                product.transactionID, GooglePlay.Name);
-            return new Product(product.definition, product.metadata, unifiedReceipt);
+            return m_GooglePlayStoreExtensions.IsPurchasedProductDeferred(product);
         }
 
         public bool HasInitiallyRetrievedProducts()

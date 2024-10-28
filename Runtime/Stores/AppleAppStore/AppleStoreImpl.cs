@@ -208,7 +208,7 @@ namespace UnityEngine.Purchasing
 
                             UpdateAppleProductFields(productDescription.storeSpecificId,
                                 mostRecentReceipt.originalTransactionIdentifier,
-                                false);
+                                true);
                         }
                     }
                     else if (productType == AppleStoreProductType.Consumable)
@@ -226,7 +226,7 @@ namespace UnityEngine.Purchasing
 
                         UpdateAppleProductFields(productDescription.storeSpecificId,
                             mostRecentReceipt.originalTransactionIdentifier,
-                            false);
+                            true);
                     }
                 }
             }
