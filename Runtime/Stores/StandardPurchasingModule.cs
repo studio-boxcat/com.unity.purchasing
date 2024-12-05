@@ -42,9 +42,6 @@ namespace UnityEngine.Purchasing
         private static readonly Dictionary<AppStore, string> AndroidStoreNameMap = new Dictionary<AppStore, string>() {
             { AppStore.AmazonAppStore, AmazonApps.Name },
             { AppStore.GooglePlay, GooglePlay.Name },
-            // XXX: UDP 내부적으로 리플렉션을 사용하는데 이게 시간이 오래 걸려서 주석처리.
-            // { AppStore.UDP, UDP.Name},
-            { AppStore.NotSpecified, GooglePlay.Name }
         };
 
         internal class StoreInstance
@@ -90,15 +87,6 @@ namespace UnityEngine.Purchasing
         public bool useFakeStoreAlways { get; set; }
 
         /// <summary>
-        /// Creates an instance of StandardPurchasingModule or retrieves the existing one.
-        /// </summary>
-        /// <returns> The existing instance or the one just created. </returns>
-        public static StandardPurchasingModule Instance()
-        {
-            return Instance(AppStore.NotSpecified);
-        }
-
-        /// <summary>
         /// Creates an instance of StandardPurchasingModule or retrieves the existing one, specifying a type of App store.
         /// </summary>
         /// <param name="androidStore"> The type of Android Store with which to create the instance. </param>
@@ -112,29 +100,6 @@ namespace UnityEngine.Purchasing
                 Object.DontDestroyOnLoad(gameObject);
                 gameObject.hideFlags = HideFlags.HideInHierarchy | HideFlags.HideInInspector;
                 var util = gameObject.AddComponent<UnityUtil>();
-
-                var textAsset = Resources.Load("BillingMode") as TextAsset;
-                StoreConfiguration config = null;
-                if (null != textAsset)
-                {
-                    config = StoreConfiguration.Deserialize(textAsset.text);
-                }
-
-                // No Android target specified at runtime, use the build time setting.
-                if (androidStore == AppStore.NotSpecified)
-                {
-                    // Default to Google Play if we don't have a build time store selection.
-                    androidStore = AppStore.GooglePlay;
-
-                    if (null != config)
-                    {
-                        var buildTimeStore = config.androidStore;
-                        if (buildTimeStore != AppStore.NotSpecified)
-                        {
-                            androidStore = buildTimeStore;
-                        }
-                    }
-                }
 
                 ModuleInstance = new StandardPurchasingModule(
                     util,

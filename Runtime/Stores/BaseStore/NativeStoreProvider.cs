@@ -43,12 +43,6 @@ namespace UnityEngine.Purchasing
                         binder.RegisterConfiguration<IAmazonConfiguration>(extensions);
                         return new AndroidJavaStore(instance);
                     }
-
-                case AppStore.UDP:
-                {
-                    Debug.LogError("Cannot set Android target to UDP. Make sure you have installed UDP in your project");
-                    throw new NotImplementedException();
-                }
             }
 
             throw new NotImplementedException();

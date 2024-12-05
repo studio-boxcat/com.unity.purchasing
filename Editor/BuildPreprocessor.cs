@@ -1,4 +1,3 @@
-using System;
 using UnityEditor.Build;
 using UnityEditor.Build.Reporting;
 
@@ -14,9 +13,6 @@ namespace UnityEditor.Purchasing
             {
                 case BuildTarget.WSAPlayer:
                     WinRTPatcher.PatchWinRTBuild();
-                    break;
-                case BuildTarget.Android:
-                    UnityPurchasingEditor.OnPostProcessScene();
                     break;
             }
         }
