@@ -41,8 +41,10 @@ namespace UnityEditor.Purchasing
                 var enabled = mapping.Value == target;
 
                 var path = string.Format("{0}/{1}", BinPath, mapping.Key);
+                UnityEngine.Debug.Log($"[UnityPurchasing] Setting {mapping.Key} enabled: {enabled}");
                 var importer = (PluginImporter)AssetImporter.GetAtPath(path);
-                importer.SetCompatibleWithPlatform(BuildTarget.Android, enabled);
+                if (importer != null)
+                    importer.SetCompatibleWithPlatform(BuildTarget.Android, enabled);
             }
         }
     }
