@@ -9,21 +9,7 @@
     "excludePlatforms": [
         "Android",
         "Editor",
-        "GameCoreScarlett",
-        "GameCoreXboxOne",
-        "LinuxStandalone64",
-        "CloudRendering",
-        "Lumin",
-        "macOSStandalone",
-        "PS4",
-        "PS5",
-        "Stadia",
-        "Switch",
-        "WSA",
-        "WebGL",
-        "WindowsStandalone32",
-        "WindowsStandalone64",
-        "XboxOne"
+        "macOSStandalone"
     ],
     "allowUnsafeCode": false,
     "overrideReferences": false,
