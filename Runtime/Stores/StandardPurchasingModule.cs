@@ -126,9 +126,6 @@ namespace UnityEngine.Purchasing
             BindConfiguration<IAmazonConfiguration>(new FakeAmazonExtensions());
             BindExtension<IAmazonExtensions>(new FakeAmazonExtensions());
 
-            BindConfiguration<IMicrosoftConfiguration>(new MicrosoftConfiguration(this));
-            BindExtension<IMicrosoftExtensions>(new FakeMicrosoftExtensions());
-
             BindConfiguration<IAndroidStoreSelection>(this);
 
             BindExtension<ITransactionHistoryExtensions>(new FakeTransactionHistoryExtensions());
@@ -184,11 +181,6 @@ namespace UnityEngine.Purchasing
                     return new StoreInstance(AppleAppStore.Name, InstantiateApple());
                 case RuntimePlatform.Android:
                     return new StoreInstance(AndroidStoreNameMap[appStore], InstantiateAndroid());
-                case RuntimePlatform.WSAPlayerARM:
-                case RuntimePlatform.WSAPlayerX64:
-                case RuntimePlatform.WSAPlayerX86:
-                    appStore = AppStore.WinRT;
-                    return new StoreInstance(WindowsStore.Name, instantiateWindowsStore());
             }
             appStore = AppStore.fake;
             return new StoreInstance(FakeStore.Name, InstantiateFakeStore());
@@ -337,27 +329,6 @@ namespace UnityEngine.Purchasing
             return store;
         }
 
-        private WinRTStore windowsStore;
-
-        private void UseMockWindowsStore(bool value)
-        {
-            if (null != windowsStore)
-            {
-                var iap = Default.Factory.Create(value);
-                windowsStore.SetWindowsIAP(iap);
-            }
-        }
-
-        private IStore instantiateWindowsStore()
-        {
-            // Create a non mocked store by default.
-            var iap = Default.Factory.Create(false);
-            windowsStore = new WinRTStore(iap, util, logger);
-            // Microsoft require polling for new purchases on each app foregrounding.
-            util.AddPauseListener(windowsStore.restoreTransactions);
-            return windowsStore;
-        }
-
         private IStore InstantiateFakeStore()
         {
             FakeStore fakeStore = null;
@@ -376,34 +347,6 @@ namespace UnityEngine.Purchasing
                 fakeStore = new FakeStore();
             }
             return fakeStore;
-        }
-
-        /// <summary>
-        /// The MicrosoftConfiguration is used to toggle between simulated
-        /// and live IAP implementations.
-        /// The switching is done in the StandardPurchasingModule,
-        /// but we don't want the to implement IMicrosoftConfiguration since
-        /// we want that implementation to be private and the module is public.
-        /// </summary>
-        private class MicrosoftConfiguration : IMicrosoftConfiguration
-        {
-            public MicrosoftConfiguration(StandardPurchasingModule module)
-            {
-                this.module = module;
-            }
-            private bool useMock;
-            private readonly StandardPurchasingModule module;
-
-            public bool useMockBillingSystem
-            {
-                get => useMock;
-
-                set
-                {
-                    module.UseMockWindowsStore(value);
-                    useMock = value;
-                }
-            }
         }
     }
 }
