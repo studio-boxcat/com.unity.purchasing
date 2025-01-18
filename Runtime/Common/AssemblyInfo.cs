@@ -2,7 +2,7 @@ using System.Reflection;
 using System.Runtime.CompilerServices;
 
 [assembly: InternalsVisibleTo("UnityEditor.Purchasing")]
-[assembly: InternalsVisibleTo("UnityEngine.Purchasing.Stores")]
+[assembly: InternalsVisibleTo("UnityEngine.Purchasing")]
 [assembly: InternalsVisibleTo("UnityEngine.Purchasing.Apple")]
 [assembly: InternalsVisibleTo("UnityEngine.Purchasing.AppleCore")]
 [assembly: InternalsVisibleTo("UnityEngine.Purchasing.AppleMacos")]
