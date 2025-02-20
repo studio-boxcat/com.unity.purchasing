@@ -92,7 +92,7 @@ namespace UnityEngine.Purchasing
         /// </summary>
         /// <param name="product">Product to consume</param>
         /// <param name="transactionId">Transaction / order id</param>
-        public override void FinishTransaction(ProductDefinition product, string transactionId)
+        public override void FinishTransaction(ProductDefinition? product, string transactionId)
         {
             m_FinishTransactionService.FinishTransaction(product, transactionId);
         }

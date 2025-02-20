@@ -38,6 +38,6 @@ namespace UnityEngine.Purchasing.Extension
         /// </summary>
         /// <param name="product"> The product purchased </param>
         /// <param name="transactionId"> The id of the transaction </param>
-        void FinishTransaction(ProductDefinition product, string transactionId);
+        void FinishTransaction(ProductDefinition? product, string transactionId);
     }
 }

@@ -1,10 +1,5 @@
 using System;
-using System.Collections.Generic;
-#if IAP_ANALYTICS_SERVICE_ENABLED || IAP_ANALYTICS_SERVICE_ENABLED_WITH_SERVICE_COMPONENT
-using Unity.Services.Analytics;
-using Unity.Services.Core;
-#endif
-using UnityEngine.Purchasing.Extension;
+using UnityEngine.Assertions;
 
 namespace UnityEngine.Purchasing
 {
@@ -57,6 +52,8 @@ namespace UnityEngine.Purchasing
         internal static void Initialize(IStoreListener listener, ConfigurationBuilder builder,
             ILogger logger, string persistentDatapath)
         {
+            Assert.IsNotNull(builder.products, "Products must be set before initialization");
+
             var transactionLog = new TransactionLog(logger, persistentDatapath);
             var manager = new PurchasingManager(transactionLog, logger, builder.factory.service,
                 builder.factory.storeName, builder.logUnavailableProducts);

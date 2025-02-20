@@ -171,7 +171,7 @@ namespace UnityEngine.Purchasing
             // we need this for INativeStore but won't be using
         }
 
-        public override void FinishTransaction(ProductDefinition product, string transactionId)
+        public override void FinishTransaction(ProductDefinition? product, string transactionId)
         {
         }
 

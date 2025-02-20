@@ -309,11 +309,6 @@ namespace UnityEngine.Purchasing
             return JSONSerializer.DeserializeSubscriptionDescriptions(m_ProductsJson);
         }
 
-        public Dictionary<string, string> GetProductDetails()
-        {
-            return JSONSerializer.DeserializeProductDetails(m_ProductsJson);
-        }
-
         public virtual void PresentCodeRedemptionSheet()
         {
             m_Native?.PresentCodeRedemptionSheet();

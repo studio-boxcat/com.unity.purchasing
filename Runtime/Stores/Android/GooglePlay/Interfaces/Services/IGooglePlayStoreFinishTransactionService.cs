@@ -5,6 +5,6 @@ namespace UnityEngine.Purchasing
     interface IGooglePlayStoreFinishTransactionService
     {
         void SetStoreCallback(IStoreCallback storeCallback);
-        void FinishTransaction(ProductDefinition product, string purchaseToken);
+        void FinishTransaction(ProductDefinition? product, string purchaseToken);
     }
 }

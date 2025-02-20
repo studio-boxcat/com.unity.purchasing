@@ -235,7 +235,7 @@ namespace UnityEngine.Purchasing
             m_GooglePurchaseService.Purchase(product, oldProduct, desiredProrationMode);
         }
 
-        public void FinishTransaction(ProductDefinition product, string purchaseToken, Action<IGoogleBillingResult, IGooglePurchase> onTransactionFinished)
+        public void FinishTransaction(ProductDefinition? product, string purchaseToken, Action<IGoogleBillingResult, IGooglePurchase> onTransactionFinished)
         {
             m_GoogleFinishTransactionService.FinishTransaction(product, purchaseToken, onTransactionFinished);
         }

@@ -360,7 +360,7 @@ namespace UnityEngine.Purchasing
             return available;
         }
 
-        public void Initialize(IInternalStoreListener listener, HashSet<ProductDefinition> products)
+        public void Initialize(IInternalStoreListener listener, ProductDefinition[] products)
         {
             m_Listener = listener;
             m_Store.Initialize(this);
@@ -368,7 +368,7 @@ namespace UnityEngine.Purchasing
             var prods = products.Select(x => new Product(x, new ProductMetadata())).ToArray();
             this.products = new ProductCollection(prods);
 
-            var productCollection = new ReadOnlyCollection<ProductDefinition>(products.ToList());
+            var productCollection = new ReadOnlyCollection<ProductDefinition>(products);
 
             // Start the initialisation process by fetching product metadata.
             m_Store.RetrieveProducts(productCollection);

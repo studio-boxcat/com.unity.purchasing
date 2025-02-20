@@ -140,11 +140,11 @@ namespace UnityEngine.Purchasing
             m_Store.Purchase(JSONSerializer.SerializeProductDef(product), developerPayload);
         }
 
-        public override void FinishTransaction(ProductDefinition product, string transactionId)
+        public override void FinishTransaction(ProductDefinition? product, string transactionId)
         {
             // Product definitions may be null if a store tells Unity IAP about an unknown product;
             // Unity IAP will not have a corresponding definition but will still finish the transaction.
-            var def = product == null ? null : JSONSerializer.SerializeProductDef(product);
+            var def = product == null ? null : JSONSerializer.SerializeProductDef(product.Value);
             m_Store.FinishTransaction(def, transactionId);
         }
 

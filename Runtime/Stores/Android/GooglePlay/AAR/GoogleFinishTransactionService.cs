@@ -20,7 +20,7 @@ namespace UnityEngine.Purchasing
             m_GoogleQueryPurchasesService = googleQueryPurchasesService;
         }
 
-        public async void FinishTransaction(ProductDefinition product, string purchaseToken,
+        public async void FinishTransaction(ProductDefinition? product, string purchaseToken,
             Action<IGoogleBillingResult, IGooglePurchase> onTransactionFinished)
         {
             try
@@ -43,11 +43,11 @@ namespace UnityEngine.Purchasing
             return purchaseToFinish;
         }
 
-        private void FinishTransactionForPurchase(IGooglePurchase purchase, ProductDefinition product,
+        private void FinishTransactionForPurchase(IGooglePurchase purchase, ProductDefinition? product,
             string purchaseToken,
             Action<IGoogleBillingResult, IGooglePurchase> onTransactionFinished)
         {
-            if (product.type == ProductType.Consumable)
+            if (product!.Value.type == ProductType.Consumable)
             {
                 m_BillingClient.ConsumeAsync(purchaseToken, result => onTransactionFinished(result, purchase));
             }

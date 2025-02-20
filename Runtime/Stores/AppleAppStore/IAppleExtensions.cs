@@ -105,12 +105,6 @@ namespace UnityEngine.Purchasing
         Dictionary<string, string> GetIntroductoryPriceDictionary();
 
         /// <summary>
-        /// Extracting product details.
-        /// </summary>
-        /// <returns>returns product details or an empty dictionary</returns>
-        Dictionary<string, string> GetProductDetails();
-
-        /// <summary>
         /// Initiate Apple iOS 14 Subscription Offer Code redemption API, presentCodeRedemptionSheet
         /// </summary>
         void PresentCodeRedemptionSheet();
