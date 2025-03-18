@@ -1,3 +1,4 @@
+#if !UNITY_IOS
 using System;
 
 namespace UnityEngine.Purchasing
@@ -89,3 +90,4 @@ namespace UnityEngine.Purchasing
         }
     }
 }
+#endif

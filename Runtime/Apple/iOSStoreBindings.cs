@@ -1,6 +1,6 @@
+#if UNITY_IOS
 using System.Runtime.InteropServices;
 
-#if !UNITY_EDITOR
 namespace UnityEngine.Purchasing
 {
     internal class iOSStoreBindings : INativeAppleStore
