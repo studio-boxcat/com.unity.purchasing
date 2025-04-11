@@ -2,8 +2,6 @@
 
 using System.Collections.Generic;
 using System.Linq;
-using UnityEngine.Purchasing.Interfaces;
-using UnityEngine.Purchasing.MiniJSON;
 using UnityEngine.Purchasing.Utils;
 
 namespace UnityEngine.Purchasing.Models
@@ -12,7 +10,7 @@ namespace UnityEngine.Purchasing.Models
     /// This is C# representation of the Java Class Purchase
     /// <a href="https://developer.android.com/reference/com/android/billingclient/api/Purchase">See more</a>
     /// </summary>
-    class GooglePurchase : IGooglePurchase
+    class GooglePurchase
     {
         public bool isAcknowledged { get; }
         public int purchaseState { get; }

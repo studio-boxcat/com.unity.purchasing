@@ -1,5 +1,3 @@
-using System;
-
 namespace UnityEngine.Purchasing.Extension
 {
     /// <summary>

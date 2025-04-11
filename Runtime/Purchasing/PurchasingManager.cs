@@ -1,7 +1,6 @@
 #nullable enable
 using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.Linq;
 using UnityEngine.Purchasing.Extension;
 
@@ -17,9 +16,6 @@ namespace UnityEngine.Purchasing
         private readonly ILogger m_Logger;
         private readonly TransactionLog m_TransactionLog;
         private readonly string m_StoreName;
-        private Action? m_AdditionalProductsCallback;
-        private Action<InitializationFailureReason>? m_AdditionalProductsFailCallback;
-        private Action<InitializationFailureReason, string?>? m_AdditionalProductsDetailedFailCallback;
 
         private readonly HashSet<string> purchasesProcessedInSession = new HashSet<string>();
 
@@ -177,18 +173,10 @@ namespace UnityEngine.Purchasing
             product.transactionID = null;
         }
 
-        [Obsolete]
-        public void OnSetupFailed(InitializationFailureReason reason)
-        {
-            OnSetupFailed(reason, null);
-        }
-
         public void OnSetupFailed(InitializationFailureReason reason, string? message)
         {
             if (initialized)
             {
-                m_AdditionalProductsFailCallback?.Invoke(reason);
-                m_AdditionalProductsDetailedFailCallback?.Invoke(reason, message);
             }
             else
             {
@@ -217,17 +205,11 @@ namespace UnityEngine.Purchasing
         /// </summary>
         public void OnProductsRetrieved(List<ProductDescription> products)
         {
-            var unknownProducts = new HashSet<Product>();
             foreach (var product in products)
             {
                 var matchedProduct = this.products.WithStoreSpecificID(product.storeSpecificId);
                 if (null == matchedProduct)
-                {
-                    var definition = new ProductDefinition(product.storeSpecificId,
-                        product.storeSpecificId, product.type);
-                    matchedProduct = new Product(definition, product.metadata);
-                    unknownProducts.Add(matchedProduct);
-                }
+                    continue;
 
                 matchedProduct.availableToPurchase = true;
                 matchedProduct.metadata = product.metadata;
@@ -237,11 +219,6 @@ namespace UnityEngine.Purchasing
                 {
                     matchedProduct.receipt = CreateUnifiedReceipt(product.receipt, product.transactionId);
                 }
-            }
-
-            if (unknownProducts.Count > 0)
-            {
-                this.products.AddProducts(unknownProducts);
             }
 
             // Fire our initialisation events if this is a first poll.
@@ -264,24 +241,6 @@ namespace UnityEngine.Purchasing
                     ProcessPurchaseIfNew(product);
                 }
             }
-        }
-
-        [Obsolete]
-        public void FetchAdditionalProducts(HashSet<ProductDefinition> additionalProducts, Action successCallback,
-            Action<InitializationFailureReason> failCallback)
-        {
-            m_AdditionalProductsCallback = successCallback;
-            m_AdditionalProductsFailCallback = failCallback;
-            products.AddProducts(additionalProducts.Select(x => new Product(x, new ProductMetadata())));
-            m_Store.RetrieveProducts(new ReadOnlyCollection<ProductDefinition>(additionalProducts.ToList()));
-        }
-
-        public void FetchAdditionalProducts(HashSet<ProductDefinition> additionalProducts, Action successCallback, Action<InitializationFailureReason, string?> failCallback)
-        {
-            m_AdditionalProductsCallback = successCallback;
-            m_AdditionalProductsDetailedFailCallback = failCallback;
-            products.AddProducts(additionalProducts.Select(x => new Product(x, new ProductMetadata())));
-            m_Store.RetrieveProducts(new ReadOnlyCollection<ProductDefinition>(additionalProducts.ToList()));
         }
 
         /// <summary>
@@ -334,10 +293,6 @@ namespace UnityEngine.Purchasing
                         message);
                 }
             }
-            else
-            {
-                m_AdditionalProductsCallback?.Invoke();
-            }
         }
 
         public void Initialize(IInternalStoreListener listener, ProductDefinition[] products)
@@ -348,10 +303,8 @@ namespace UnityEngine.Purchasing
             var prods = products.Select(x => new Product(x, new ProductMetadata())).ToArray();
             this.products = new ProductCollection(prods);
 
-            var productCollection = new ReadOnlyCollection<ProductDefinition>(products);
-
             // Start the initialisation process by fetching product metadata.
-            m_Store.RetrieveProducts(productCollection);
+            m_Store.RetrieveProducts(products);
         }
     }
 }

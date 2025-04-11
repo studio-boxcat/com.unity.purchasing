@@ -1,47 +1,46 @@
 #nullable enable
 
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using UnityEngine.Purchasing.Interfaces;
 using UnityEngine.Purchasing.Models;
+using UnityEngine.Purchasing.Utils;
 
 namespace UnityEngine.Purchasing
 {
-    class GoogleQueryPurchasesService : IGoogleQueryPurchasesService
+    class GoogleQueryPurchasesService
     {
-        readonly IGoogleBillingClient m_BillingClient;
-        readonly IGooglePurchaseBuilder m_PurchaseBuilder;
+        readonly GoogleBillingClient m_BillingClient;
+        readonly GooglePurchaseBuilder m_PurchaseBuilder;
 
-        internal GoogleQueryPurchasesService(IGoogleBillingClient billingClient, IGooglePurchaseBuilder purchaseBuilder)
+        internal GoogleQueryPurchasesService(GoogleBillingClient billingClient, GooglePurchaseBuilder purchaseBuilder)
         {
             m_BillingClient = billingClient;
             m_PurchaseBuilder = purchaseBuilder;
         }
 
-        public async Task<List<IGooglePurchase>> QueryPurchases()
+        public async Task<List<GooglePurchase>> QueryPurchases()
         {
             var purchaseResults = await Task.WhenAll(QueryPurchasesWithSkuType(GoogleProductTypeEnum.Sub()), QueryPurchasesWithSkuType(GoogleProductTypeEnum.InApp()));
             return purchaseResults.SelectMany(result => result).ToList();
         }
 
-        Task<IEnumerable<IGooglePurchase>> QueryPurchasesWithSkuType(string skuType)
+        Task<IEnumerable<GooglePurchase>> QueryPurchasesWithSkuType(string skuType)
         {
-            var taskCompletion = new TaskCompletionSource<IEnumerable<IGooglePurchase>>();
+            var taskCompletion = new TaskCompletionSource<IEnumerable<GooglePurchase>>();
             m_BillingClient.QueryPurchasesAsync(skuType,
                 (billingResult, purchases) =>
                 {
-                    var result = IsResultOk(billingResult) ? m_PurchaseBuilder.BuildPurchases(purchases) : Enumerable.Empty<IGooglePurchase>();
+                    var result = IsResultOk(billingResult) ? m_PurchaseBuilder.BuildPurchases(purchases) : Enumerable.Empty<GooglePurchase>();
                     taskCompletion.TrySetResult(result);
                 });
 
             return taskCompletion.Task;
         }
 
-        public IGooglePurchase? GetPurchaseByToken(string purchaseToken, string skuType)
+        public GooglePurchase? GetPurchaseByToken(string purchaseToken, string skuType)
         {
-            var taskCompletion = new TaskCompletionSource<IGooglePurchase?>();
+            var taskCompletion = new TaskCompletionSource<GooglePurchase?>();
             m_BillingClient.QueryPurchasesAsync(skuType,
                 (billingResult, purchases) =>
                 {
@@ -53,7 +52,7 @@ namespace UnityEngine.Purchasing
             return taskCompletion.Task.Result;
         }
 
-        static bool IsResultOk(IGoogleBillingResult result)
+        static bool IsResultOk(GoogleBillingResult result)
         {
             return result.responseCode == GoogleBillingResponseCode.Ok;
         }

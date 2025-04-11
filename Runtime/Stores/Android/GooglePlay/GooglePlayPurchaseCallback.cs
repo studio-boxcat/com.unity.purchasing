@@ -1,18 +1,17 @@
 #nullable enable
 
-using Uniject;
 using UnityEngine.Purchasing.Extension;
-using UnityEngine.Purchasing.Interfaces;
+using UnityEngine.Purchasing.Models;
 
 namespace UnityEngine.Purchasing
 {
-    class GooglePlayPurchaseCallback : IGooglePurchaseCallback
+    class GooglePlayPurchaseCallback
     {
         IStoreCallback? m_StoreCallback;
         IGooglePlayConfigurationInternal? m_GooglePlayConfigurationInternal;
-        readonly IUtil m_Util;
+        readonly UnityUtil m_Util;
 
-        public GooglePlayPurchaseCallback(IUtil util)
+        public GooglePlayPurchaseCallback(UnityUtil util)
         {
             m_Util = util;
         }
@@ -27,7 +26,7 @@ namespace UnityEngine.Purchasing
             m_GooglePlayConfigurationInternal = configuration;
         }
 
-        public void OnPurchaseSuccessful(IGooglePurchase purchase, string receipt, string purchaseToken)
+        public void OnPurchaseSuccessful(GooglePurchase purchase, string receipt, string purchaseToken)
         {
             m_StoreCallback?.OnPurchaseSucceeded(purchase.sku ?? string.Empty, receipt, purchaseToken);
         }
@@ -37,7 +36,7 @@ namespace UnityEngine.Purchasing
             m_StoreCallback?.OnPurchaseFailed(purchaseFailureDescription);
         }
 
-        public void NotifyDeferredPurchase(IGooglePurchase purchase, string receipt, string purchaseToken)
+        public void NotifyDeferredPurchase(GooglePurchase purchase, string receipt, string purchaseToken)
         {
             m_Util.RunOnMainThread(() =>
                 m_GooglePlayConfigurationInternal?.NotifyDeferredPurchase(m_StoreCallback, purchase, receipt,

@@ -1,19 +1,18 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using Uniject;
 using UnityEngine.Purchasing.Extension;
-using UnityEngine.Purchasing.Interfaces;
+using UnityEngine.Purchasing.Models;
 
 namespace UnityEngine.Purchasing
 {
-    class GoogleFetchPurchases : IGoogleFetchPurchases
+    class GoogleFetchPurchases
     {
-        readonly IGooglePlayStoreService m_GooglePlayStoreService;
+        readonly GooglePlayStoreService m_GooglePlayStoreService;
         IStoreCallback m_StoreCallback;
-        IUtil m_Util;
+        UnityUtil m_Util;
 
-        internal GoogleFetchPurchases(IGooglePlayStoreService googlePlayStoreService, IUtil util)
+        internal GoogleFetchPurchases(GooglePlayStoreService googlePlayStoreService, UnityUtil util)
         {
             m_GooglePlayStoreService = googlePlayStoreService;
             m_Util = util;
@@ -38,18 +37,18 @@ namespace UnityEngine.Purchasing
                 });
         }
 
-        List<Product> FillProductsWithPurchases(IEnumerable<IGooglePurchase> purchases)
+        List<Product> FillProductsWithPurchases(IEnumerable<GooglePurchase> purchases)
         {
             return purchases.SelectMany(BuildProductsFromPurchase).ToList();
         }
 
-        IEnumerable<Product> BuildProductsFromPurchase(IGooglePurchase purchase)
+        IEnumerable<Product> BuildProductsFromPurchase(GooglePurchase purchase)
         {
             var products = purchase?.skus?.Select(sku => m_StoreCallback?.FindProductById(sku)).NonNull();
             return products?.Select(product => CompleteProductInfoWithPurchase(product, purchase));
         }
 
-        static Product CompleteProductInfoWithPurchase(Product product, IGooglePurchase purchase)
+        static Product CompleteProductInfoWithPurchase(Product product, GooglePurchase purchase)
         {
             return new Product(product.definition, product.metadata, purchase.receipt)
             {
@@ -57,7 +56,7 @@ namespace UnityEngine.Purchasing
             };
         }
 
-        void OnFetchedPurchase(List<IGooglePurchase> purchases)
+        void OnFetchedPurchase(List<GooglePurchase> purchases)
         {
             var purchasedPurchases = purchases.Where(PurchaseIsPurchased()).ToList();
             var purchasedProducts = FillProductsWithPurchases(purchasedPurchases);
@@ -75,17 +74,17 @@ namespace UnityEngine.Purchasing
             m_Util.RunOnMainThread(() => UpdateDeferredProductsByPurchases(deferredPurchases));
         }
 
-        static Func<IGooglePurchase, bool> PurchaseIsPurchased()
+        static Func<GooglePurchase, bool> PurchaseIsPurchased()
         {
             return purchase => purchase.IsPurchased();
         }
 
-        static Func<IGooglePurchase, bool> PurchaseIsPending()
+        static Func<GooglePurchase, bool> PurchaseIsPending()
         {
             return purchase => purchase.IsPending();
         }
 
-        void UpdateDeferredProductsByPurchases(List<IGooglePurchase> deferredPurchases)
+        void UpdateDeferredProductsByPurchases(List<GooglePurchase> deferredPurchases)
         {
             foreach (var deferredPurchase in deferredPurchases)
             {
@@ -93,7 +92,7 @@ namespace UnityEngine.Purchasing
             }
         }
 
-        void UpdateDeferredProductsByPurchase(IGooglePurchase deferredPurchase)
+        void UpdateDeferredProductsByPurchase(GooglePurchase deferredPurchase)
         {
             foreach (var sku in deferredPurchase.skus)
             {
@@ -101,7 +100,7 @@ namespace UnityEngine.Purchasing
             }
         }
 
-        void UpdateDeferredProduct(IGooglePurchase deferredPurchase, string sku)
+        void UpdateDeferredProduct(GooglePurchase deferredPurchase, string sku)
         {
             var product = m_StoreCallback?.FindProductById(sku);
             if (product != null)

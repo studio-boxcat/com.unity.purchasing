@@ -1,9 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using Uniject;
-using UnityEngine.Purchasing.Interfaces;
-using UnityEngine.Purchasing.Utils;
+using UnityEngine.Purchasing.Extension;
 
 namespace UnityEngine.Purchasing.Models
 {
@@ -11,7 +9,7 @@ namespace UnityEngine.Purchasing.Models
     /// This is C# representation of the Java Class BillingClient
     /// <a href="https://developer.android.com/reference/com/android/billingclient/api/BillingClient">See more</a>
     /// </summary>
-    class GoogleBillingClient : IGoogleBillingClient
+    class GoogleBillingClient
     {
         const string k_AndroidProductClassName = "com.android.billingclient.api.QueryProductDetailsParams$Product";
         static AndroidJavaClass s_AndroidProductClassName;
@@ -80,9 +78,9 @@ namespace UnityEngine.Purchasing.Models
         readonly AndroidJavaObject m_BillingClient;
         string m_ObfuscatedAccountId;
         string m_ObfuscatedProfileId;
-        readonly IUtil m_Util;
+        readonly UnityUtil m_Util;
 
-        internal GoogleBillingClient(IGooglePurchaseUpdatedListener googlePurchaseUpdatedListener, IUtil util)
+        internal GoogleBillingClient(GooglePurchaseUpdatedListener googlePurchaseUpdatedListener, UnityUtil util)
         {
             m_Util = util;
             using var builder = GetBillingClientClass().CallStatic<AndroidJavaObject>("newBuilder", UnityActivity.GetCurrentActivity());
@@ -101,7 +99,7 @@ namespace UnityEngine.Purchasing.Models
             m_ObfuscatedProfileId = obfuscationProfileId;
         }
 
-        public void StartConnection(IBillingClientStateListener billingClientStateListener)
+        public void StartConnection(BillingClientStateListener billingClientStateListener)
         {
             m_BillingClient.Call("startConnection", billingClientStateListener);
         }
@@ -121,14 +119,14 @@ namespace UnityEngine.Purchasing.Models
             return (GoogleBillingConnectionState)m_BillingClient.Call<int>("getConnectionState");
         }
 
-        public void QueryPurchasesAsync(string skuType, Action<IGoogleBillingResult, IEnumerable<AndroidJavaObject>> onQueryPurchasesResponse)
+        public void QueryPurchasesAsync(string skuType, Action<GoogleBillingResult, IEnumerable<AndroidJavaObject>> onQueryPurchasesResponse)
         {
             var listener = new GooglePurchasesResponseListener(onQueryPurchasesResponse);
             m_BillingClient.Call("queryPurchasesAsync", skuType, listener);
         }
 
         public void QueryProductDetailsAsync(List<string> products, string type,
-            Action<IGoogleBillingResult, List<AndroidJavaObject>> onProductDetailsResponseAction)
+            Action<GoogleBillingResult, List<AndroidJavaObject>> onProductDetailsResponseAction)
         {
             using var queryProductDetailsParams = QueryProductDetailsParams(products, type);
             var productDetailsResponseListener = new ProductDetailsResponseListener(onProductDetailsResponseAction, m_Util);
@@ -227,7 +225,7 @@ namespace UnityEngine.Purchasing.Models
             return billingFlowParams;
         }
 
-        public void ConsumeAsync(string purchaseToken, Action<IGoogleBillingResult> onConsume)
+        public void ConsumeAsync(string purchaseToken, Action<GoogleBillingResult> onConsume)
         {
             using var consumeParamsBuilder = GetConsumeParamsClass().CallStatic<AndroidJavaObject>("newBuilder");
             consumeParamsBuilder.Call<AndroidJavaObject>("setPurchaseToken", purchaseToken).Dispose();
@@ -236,7 +234,7 @@ namespace UnityEngine.Purchasing.Models
             m_BillingClient.Call("consumeAsync", consumeParams, new GoogleConsumeResponseListener(onConsume));
         }
 
-        public void AcknowledgePurchase(string purchaseToken, Action<IGoogleBillingResult> onAcknowledge)
+        public void AcknowledgePurchase(string purchaseToken, Action<GoogleBillingResult> onAcknowledge)
         {
             using var acknowledgePurchaseParamsBuilder = GetAcknowledgePurchaseParamsClass().CallStatic<AndroidJavaObject>("newBuilder");
             acknowledgePurchaseParamsBuilder.Call<AndroidJavaObject>("setPurchaseToken", purchaseToken).Dispose();

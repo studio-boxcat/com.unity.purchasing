@@ -1,6 +1,5 @@
 #nullable enable
 using UnityEngine.Purchasing.Extension;
-using System;
 
 namespace UnityEngine.Purchasing
 {

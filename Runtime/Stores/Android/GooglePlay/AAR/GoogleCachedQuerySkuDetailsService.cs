@@ -3,7 +3,7 @@ using System.Linq;
 
 namespace UnityEngine.Purchasing
 {
-    class GoogleCachedQueryProductDetailsService : IGoogleCachedQueryProductDetailsService
+    class GoogleCachedQueryProductDetailsService
     {
         readonly Dictionary<string, AndroidJavaObject> m_CachedQueriedProductDetails = new Dictionary<string, AndroidJavaObject>();
 

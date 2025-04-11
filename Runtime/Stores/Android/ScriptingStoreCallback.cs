@@ -1,7 +1,5 @@
 #nullable enable
-using System;
 using System.Collections.Generic;
-using Uniject;
 using UnityEngine.Purchasing.Extension;
 
 namespace UnityEngine.Purchasing
@@ -13,21 +11,15 @@ namespace UnityEngine.Purchasing
     internal class ScriptingStoreCallback : IStoreCallback
     {
         readonly IStoreCallback m_ForwardTo;
-        readonly IUtil m_Util;
+        readonly UnityUtil m_Util;
 
-        public ScriptingStoreCallback(IStoreCallback forwardTo, IUtil util)
+        public ScriptingStoreCallback(IStoreCallback forwardTo, UnityUtil util)
         {
             m_ForwardTo = forwardTo;
             m_Util = util;
         }
 
         public ProductCollection products => m_ForwardTo.products;
-
-        [Obsolete]
-        public void OnSetupFailed(InitializationFailureReason reason)
-        {
-            m_Util.RunOnMainThread(() => m_ForwardTo.OnSetupFailed(reason, null));
-        }
 
         public void OnSetupFailed(InitializationFailureReason reason, string? message)
         {

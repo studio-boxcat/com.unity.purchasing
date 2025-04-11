@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using Stores.Util;
 using UnityEngine.Purchasing.Extension;
 
@@ -10,48 +9,10 @@ namespace UnityEngine.Purchasing
     /// Internal store implementation passing store requests from the user through to the underlaying
     /// native store system, and back again. Binds a native store system binding to a callback.
     /// </summary>
-    internal class JSONStore : AbstractStore, IUnityCallback, IStoreInternal, ITransactionHistoryExtensions
+    internal class JSONStore : IStore, IUnityCallback, ITransactionHistoryExtensions
     {
-        public Product[] storeCatalog
-        {
-            get
-            {
-                var result = new List<Product>();
-                if (m_StoreCatalog != null && unity.products.all != null)
-                {
-                    foreach (var catalogProduct in m_StoreCatalog)
-                    {
-                        foreach (var controllerProduct in unity.products.all)
-                        {
-                            // Ensure owned products are excluded from list (except when consumable)
-                            var isProductOwned = false;
-                            if (controllerProduct.definition.type != ProductType.Consumable)
-                            {
-                                if (controllerProduct.hasReceipt || !String.IsNullOrEmpty(controllerProduct.transactionID))
-                                {
-                                    isProductOwned = true;
-                                }
-                            }
-                            // TODO: Update Engine Code so Product Definition comparision Equals checks against storeSpecificId
-                            if (controllerProduct.availableToPurchase &&
-                                !isProductOwned &&
-                                controllerProduct.definition.storeSpecificId == catalogProduct.storeSpecificId)
-                            {
-                                result.Add(controllerProduct);
-                            }
-                        }
-                    }
-                }
-                return result.ToArray();
-            }
-        }
-
         protected IStoreCallback unity;
         private INativeStore m_Store;
-        private List<ProductDefinition> m_StoreCatalog;
-        private bool m_IsRefreshing;
-
-        private Action m_RefreshCallback;
 
         // m_Module is our StandardPurchasingModule, added via reflection to avoid core changes etc.
         private StandardPurchasingModule m_Module;
@@ -81,7 +42,7 @@ namespace UnityEngine.Purchasing
             m_Store = native;
         }
 
-        void IStoreInternal.SetModule(StandardPurchasingModule module)
+        public void SetModule(StandardPurchasingModule module)
         {
             if (module == null)
             {
@@ -91,13 +52,12 @@ namespace UnityEngine.Purchasing
             m_Logger = module.logger ?? Debug.unityLogger;
         }
 
-        public override void Initialize(IStoreCallback callback)
+        public virtual void Initialize(IStoreCallback callback)
         {
             unity = callback;
 
             if (m_Module != null)
             {
-                var storeName = m_Module.storeInstance.storeName;
             }
             else
             {
@@ -108,39 +68,17 @@ namespace UnityEngine.Purchasing
             }
         }
 
-        public override void RetrieveProducts(ReadOnlyCollection<ProductDefinition> products)
+        public virtual void RetrieveProducts(ProductDefinition[] products)
         {
             m_Store.RetrieveProducts(JSONSerializer.SerializeProductDefs(products));
         }
 
-        internal void ProcessManagedStoreResponse(List<ProductDefinition> storeProducts)
-        {
-            m_StoreCatalog = storeProducts;
-            if (m_IsRefreshing)
-            {
-                m_IsRefreshing = false;
-                // Skip native store layer during refresh if catalog contains no information
-                if (storeCatalog.Length == 0 && m_RefreshCallback != null)
-                {
-                    m_RefreshCallback();
-                    m_RefreshCallback = null;
-                    return;
-                }
-            }
-            var products = new HashSet<ProductDefinition>();
-            if (storeProducts != null)
-            {
-                products.UnionWith(storeProducts);
-            }
-            m_Store.RetrieveProducts(JSONSerializer.SerializeProductDefs(products));
-        }
-
-        public override void Purchase(ProductDefinition product, string developerPayload)
+        public virtual void Purchase(ProductDefinition product, string developerPayload)
         {
             m_Store.Purchase(JSONSerializer.SerializeProductDef(product), developerPayload);
         }
 
-        public override void FinishTransaction(ProductDefinition? product, string transactionId)
+        public virtual void FinishTransaction(ProductDefinition? product, string transactionId)
         {
             // Product definitions may be null if a store tells Unity IAP about an unknown product;
             // Unity IAP will not have a corresponding definition but will still finish the transaction.

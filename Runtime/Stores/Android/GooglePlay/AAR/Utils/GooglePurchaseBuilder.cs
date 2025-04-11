@@ -1,26 +1,25 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using UnityEngine.Purchasing.Interfaces;
 using UnityEngine.Purchasing.Models;
 
 namespace UnityEngine.Purchasing.Utils
 {
-    class GooglePurchaseBuilder : IGooglePurchaseBuilder
+    class GooglePurchaseBuilder
     {
-        readonly IGoogleCachedQueryProductDetailsService m_CachedQueryProductDetailsService;
+        readonly GoogleCachedQueryProductDetailsService m_CachedQueryProductDetailsService;
         readonly ILogger m_Logger;
 
-        public GooglePurchaseBuilder(IGoogleCachedQueryProductDetailsService cachedQueryProductDetailsService, ILogger logger)
+        public GooglePurchaseBuilder(GoogleCachedQueryProductDetailsService cachedQueryProductDetailsService, ILogger logger)
         {
             m_CachedQueryProductDetailsService = cachedQueryProductDetailsService;
             m_Logger = logger;
         }
 
-        public IEnumerable<IGooglePurchase> BuildPurchases(IEnumerable<AndroidJavaObject> purchases)
+        public IEnumerable<GooglePurchase> BuildPurchases(IEnumerable<AndroidJavaObject> purchases)
         {
             return purchases.Select(BuildPurchase)
-                .IgnoreExceptions<IGooglePurchase, ArgumentException>(LogWarningForException).ToList();
+                .IgnoreExceptions<GooglePurchase, ArgumentException>(LogWarningForException).ToList();
         }
 
         void LogWarningForException(Exception exception)
@@ -28,7 +27,7 @@ namespace UnityEngine.Purchasing.Utils
             m_Logger.LogIAPWarning(exception.Message);
         }
 
-        public IGooglePurchase BuildPurchase(AndroidJavaObject purchase)
+        public GooglePurchase BuildPurchase(AndroidJavaObject purchase)
         {
             var cachedProductDetails = m_CachedQueryProductDetailsService.GetCachedQueriedProducts();
             using var getProductsObj = purchase.Call<AndroidJavaObject>("getProducts");

@@ -1,5 +1,4 @@
 using System;
-using UnityEngine.Purchasing.Interfaces;
 using UnityEngine.Purchasing.Models;
 using UnityEngine.Scripting;
 
@@ -9,7 +8,7 @@ namespace UnityEngine.Purchasing
     /// This is C# representation of the Java Class BillingClientStateListener
     /// <a href="https://developer.android.com/reference/com/android/billingclient/api/BillingClientStateListener">See more</a>
     /// </summary>
-    class BillingClientStateListener : AndroidJavaProxy, IBillingClientStateListener
+    class BillingClientStateListener : AndroidJavaProxy
     {
         const string k_AndroidBillingClientStateListenerClassName = "com.android.billingclient.api.BillingClientStateListener";
 
@@ -32,7 +31,7 @@ namespace UnityEngine.Purchasing
         [Preserve]
         public void onBillingSetupFinished(AndroidJavaObject billingResult)
         {
-            IGoogleBillingResult result = new GoogleBillingResult(billingResult);
+            GoogleBillingResult result = new GoogleBillingResult(billingResult);
             if (result.responseCode == GoogleBillingResponseCode.Ok)
             {
                 m_OnConnected();

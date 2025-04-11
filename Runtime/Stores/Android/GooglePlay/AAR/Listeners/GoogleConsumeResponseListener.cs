@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Generic;
 using UnityEngine.Purchasing.Models;
 using UnityEngine.Scripting;
 
@@ -12,9 +11,9 @@ namespace UnityEngine.Purchasing
     class GoogleConsumeResponseListener : AndroidJavaProxy
     {
         const string k_AndroidConsumeResponseListenerClassName = "com.android.billingclient.api.ConsumeResponseListener";
-        readonly Action<IGoogleBillingResult> m_OnConsumeResponse;
+        readonly Action<GoogleBillingResult> m_OnConsumeResponse;
 
-        internal GoogleConsumeResponseListener(Action<IGoogleBillingResult> onConsumeResponseAction)
+        internal GoogleConsumeResponseListener(Action<GoogleBillingResult> onConsumeResponseAction)
             : base(k_AndroidConsumeResponseListenerClassName)
         {
             m_OnConsumeResponse = onConsumeResponseAction;

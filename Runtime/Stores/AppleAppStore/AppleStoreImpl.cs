@@ -4,7 +4,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using AOT;
-using Uniject;
 using UnityEngine.Purchasing.Extension;
 using UnityEngine.Purchasing.MiniJSON;
 using UnityEngine.Purchasing.Security;
@@ -29,7 +28,7 @@ namespace UnityEngine.Purchasing
         Action<string, AppleStorePromotionVisibility>? m_FetchStorePromotionVisibilitySuccess;
         INativeAppleStore? m_Native;
 
-        static IUtil? s_Util;
+        static UnityUtil? s_Util;
         static AppleStoreImpl? s_Instance;
 
         string? m_CachedAppReceipt;
@@ -38,7 +37,7 @@ namespace UnityEngine.Purchasing
 
         string? m_ProductsJson;
 
-        public AppleStoreImpl(IUtil util)
+        public AppleStoreImpl(UnityUtil util)
         {
             s_Util = util;
             s_Instance = this;

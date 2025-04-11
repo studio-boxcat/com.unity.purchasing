@@ -1,12 +1,11 @@
 using System;
-using Uniject;
 using UnityEngine.Purchasing.Extension;
 
 namespace UnityEngine.Purchasing
 {
-    internal class NativeStoreProvider : INativeStoreProvider
+    internal class NativeStoreProvider
     {
-        public INativeStore GetAndroidStore(IUnityCallback callback, AppStore store, IPurchasingBinder binder, IUtil util)
+        public INativeStore GetAndroidStore(IUnityCallback callback, AppStore store, IPurchasingBinder binder, UnityUtil util)
         {
             INativeStore nativeStore;
             try
@@ -27,7 +26,7 @@ namespace UnityEngine.Purchasing
         }
 
         private INativeStore GetAndroidStoreHelper(IUnityCallback callback, AppStore store, IPurchasingBinder binder,
-            IUtil util)
+            UnityUtil util)
         {
             switch (store)
             {

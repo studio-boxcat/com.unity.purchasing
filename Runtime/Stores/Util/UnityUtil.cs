@@ -1,12 +1,11 @@
 using System;
 using System.Collections.Generic;
-using Uniject;
 
 namespace UnityEngine.Purchasing.Extension
 {
     [HideInInspector]
     [AddComponentMenu("")]
-    internal class UnityUtil : MonoBehaviour, IUtil
+    internal class UnityUtil : MonoBehaviour
     {
         private static readonly List<Action> s_Callbacks = new List<Action>();
         private static volatile bool s_CallbacksPending;

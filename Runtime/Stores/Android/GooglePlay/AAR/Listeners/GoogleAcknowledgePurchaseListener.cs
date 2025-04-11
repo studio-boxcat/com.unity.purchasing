@@ -11,9 +11,9 @@ namespace UnityEngine.Purchasing
     class GoogleAcknowledgePurchaseListener : AndroidJavaProxy
     {
         const string k_AndroidAcknowledgePurchaseResponseListenerClassName = "com.android.billingclient.api.AcknowledgePurchaseResponseListener";
-        readonly Action<IGoogleBillingResult> m_OnAcknowledgePurchaseResponse;
+        readonly Action<GoogleBillingResult> m_OnAcknowledgePurchaseResponse;
 
-        internal GoogleAcknowledgePurchaseListener(Action<IGoogleBillingResult> onAcknowledgePurchaseResponseAction)
+        internal GoogleAcknowledgePurchaseListener(Action<GoogleBillingResult> onAcknowledgePurchaseResponseAction)
             : base(k_AndroidAcknowledgePurchaseResponseListenerClassName)
         {
             m_OnAcknowledgePurchaseResponse = onAcknowledgePurchaseResponseAction;

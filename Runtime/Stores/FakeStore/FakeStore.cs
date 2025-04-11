@@ -41,8 +41,6 @@ namespace UnityEngine.Purchasing
         public const string Name = "fake";
         private IStoreCallback m_Biller;
         private readonly List<string> m_PurchasedProducts = new List<string>();
-        public bool purchaseCalled;
-        public bool restoreCalled;
         public string unavailableProductId { get; set; }
         public FakeStoreUIMode UIMode = FakeStoreUIMode.Default; // Requires UIFakeStore
 
@@ -118,7 +116,6 @@ namespace UnityEngine.Purchasing
 
         void FakePurchase(ProductDefinition product, string developerPayload)
         {
-            purchaseCalled = true;
             // Our billing systems should only keep track of non consumables.
             if (product.type != ProductType.Consumable)
             {
@@ -155,7 +152,6 @@ namespace UnityEngine.Purchasing
 
         public void RestoreTransactions(Action<bool, string> callback)
         {
-            restoreCalled = true;
             foreach (var product in m_PurchasedProducts)
             {
                 m_Biller.OnPurchaseSucceeded(product, /*lang=json,strict*/ "{ \"this\" : \"is a fake receipt\" }", "1");

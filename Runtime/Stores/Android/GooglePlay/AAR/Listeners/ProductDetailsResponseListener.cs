@@ -3,7 +3,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using Uniject;
+using UnityEngine.Purchasing.Extension;
 using UnityEngine.Purchasing.Models;
 using UnityEngine.Scripting;
 
@@ -16,11 +16,11 @@ namespace UnityEngine.Purchasing
     class ProductDetailsResponseListener : AndroidJavaProxy
     {
         const string k_AndroidProductDetailsResponseListenerClassName = "com.android.billingclient.api.ProductDetailsResponseListener";
-        readonly Action<IGoogleBillingResult, List<AndroidJavaObject>> m_OnProductDetailsResponse;
-        readonly IUtil m_Util;
+        readonly Action<GoogleBillingResult, List<AndroidJavaObject>> m_OnProductDetailsResponse;
+        readonly UnityUtil m_Util;
 
         internal ProductDetailsResponseListener(
-            Action<IGoogleBillingResult, List<AndroidJavaObject>> onProductDetailsResponseAction, IUtil util)
+            Action<GoogleBillingResult, List<AndroidJavaObject>> onProductDetailsResponseAction, UnityUtil util)
             : base(k_AndroidProductDetailsResponseListenerClassName)
         {
             m_OnProductDetailsResponse = onProductDetailsResponseAction;
