@@ -17,7 +17,6 @@ namespace UnityEngine.Purchasing
         private readonly ILogger m_Logger;
         private readonly TransactionLog m_TransactionLog;
         private readonly string m_StoreName;
-        readonly bool m_logUnavailableProducts;
         private Action? m_AdditionalProductsCallback;
         private Action<InitializationFailureReason>? m_AdditionalProductsFailCallback;
         private Action<InitializationFailureReason, string?>? m_AdditionalProductsDetailedFailCallback;
@@ -29,14 +28,13 @@ namespace UnityEngine.Purchasing
         /// </summary>
         public bool useTransactionLog { get; set; }
 
-        internal PurchasingManager(TransactionLog tDb, ILogger logger, IStore store, string storeName, bool logUnavailableProducts)
+        internal PurchasingManager(TransactionLog tDb, ILogger logger, IStore store, string storeName)
         {
             m_TransactionLog = tDb;
             m_Store = store;
             m_Logger = logger;
             m_StoreName = storeName;
             useTransactionLog = true;
-            m_logUnavailableProducts = logUnavailableProducts;
         }
 
         public void InitiatePurchase(Product product)
@@ -323,7 +321,7 @@ namespace UnityEngine.Purchasing
             if (!initialized)
             {
                 initialized = true;
-                if (productCount > 0 && HasAvailableProductsToPurchase())
+                if (productCount > 0)
                 {
                     m_Listener?.OnInitialized(this);
                 }
@@ -340,24 +338,6 @@ namespace UnityEngine.Purchasing
             {
                 m_AdditionalProductsCallback?.Invoke();
             }
-        }
-
-        bool HasAvailableProductsToPurchase()
-        {
-            var available = false;
-            foreach (var product in products.set)
-            {
-                if (product.availableToPurchase)
-                {
-                    available = true;
-                }
-                else if (m_logUnavailableProducts)
-                {
-                    m_Logger.LogFormat(LogType.Warning, "Unavailable product {0}-{1}", product.definition.id, product.definition.storeSpecificId);
-                }
-            }
-
-            return available;
         }
 
         public void Initialize(IInternalStoreListener listener, ProductDefinition[] products)
