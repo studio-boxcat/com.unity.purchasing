@@ -1,4 +1,3 @@
-using System;
 using UnityEngine.Assertions;
 
 namespace UnityEngine.Purchasing
@@ -11,22 +10,9 @@ namespace UnityEngine.Purchasing
         /// <summary>
         /// The main initialization call for Unity Purchasing.
         /// </summary>
-        /// <param name="listener"> The <c>IStoreListener</c> to receive callbacks for future transactions </param>
-        /// <param name="builder"> The <c>ConfigurationBuilder</c> containing the product definitions mapped to stores </param>
-        [Obsolete("Use Initialize(IDetailedStoreListener, ConfigurationBuilder)", false)]
-        public static void Initialize(IStoreListener listener, ConfigurationBuilder builder)
-        {
-            var logger = Debug.unityLogger;
-
-            Initialize(listener, builder, logger, Application.persistentDataPath);
-        }
-
-        /// <summary>
-        /// The main initialization call for Unity Purchasing.
-        /// </summary>
         /// <param name="listener"> The <c>IDetailedStoreListener</c> to receive callbacks for future transactions </param>
         /// <param name="builder"> The <c>ConfigurationBuilder</c> containing the product definitions mapped to stores </param>
-        public static void Initialize(IDetailedStoreListener listener, ConfigurationBuilder builder)
+        public static void Initialize(IStoreListener listener, ConfigurationBuilder builder)
         {
             var logger = Debug.unityLogger;
 

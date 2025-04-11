@@ -1,4 +1,5 @@
 using System;
+using UnityEngine.Purchasing.Extension;
 
 namespace UnityEngine.Purchasing
 {
@@ -22,12 +23,12 @@ namespace UnityEngine.Purchasing
         PurchaseProcessingResult ProcessPurchase(PurchaseEventArgs purchaseEvent);
 
         /// <summary>
-        /// A purchase failed with specified reason.
+        /// A purchase failed with a detailed Failure Description.
+        /// PurchaseFailureDescription contains : productId, PurchaseFailureReason and an error message
         /// </summary>
         /// <param name="product"> The product that was attempted to be purchased. </param>
-        /// <param name="failureReason"> The failure reason. </param>
-        [Obsolete("Use IDetailedStoreListener.OnPurchaseFailed for more detailed callback.", false)]
-        void OnPurchaseFailed(Product product, PurchaseFailureReason failureReason);
+        /// <param name="failureDescription"> The Purchase Failure Description. </param>
+        void OnPurchaseFailed(Product product, PurchaseFailureDescription failureDescription);
 
         /// <summary>
         /// Purchasing initialized successfully.
@@ -37,6 +38,6 @@ namespace UnityEngine.Purchasing
         /// </summary>
         /// <param name="controller"> The <c>IStoreController</c> created during initialization. </param>
         /// <param name="extensions"> The <c>IExtensionProvider</c> created during initialization. </param>
-        void OnInitialized(IStoreController controller, IExtensionProvider extensions);
+        void OnInitialized(PurchasingManager controller, IExtensionProvider extensions);
     }
 }

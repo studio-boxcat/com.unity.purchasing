@@ -1,5 +1,4 @@
 #nullable enable
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine.Purchasing.Extension;
@@ -9,10 +8,10 @@ namespace UnityEngine.Purchasing
     /// <summary>
     /// The main controller for Applications using Unity Purchasing.
     /// </summary>
-    internal class PurchasingManager : IStoreCallback, IStoreController
+    public class PurchasingManager : IStoreCallback
     {
         private readonly IStore m_Store;
-        private IInternalStoreListener? m_Listener;
+        private StoreListenerProxy? m_Listener;
         private readonly ILogger m_Logger;
         private readonly TransactionLog m_TransactionLog;
         private readonly string m_StoreName;
@@ -295,7 +294,7 @@ namespace UnityEngine.Purchasing
             }
         }
 
-        public void Initialize(IInternalStoreListener listener, ProductDefinition[] products)
+        internal void Initialize(StoreListenerProxy listener, ProductDefinition[] products)
         {
             m_Listener = listener;
             m_Store.Initialize(this);
