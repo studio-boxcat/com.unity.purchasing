@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.IO;
 using UnityEngine.Purchasing.Extension;
 
 namespace UnityEngine.Purchasing
@@ -13,7 +12,6 @@ namespace UnityEngine.Purchasing
         private readonly Dictionary<Type, IStoreConfiguration> m_ConfigMap = new Dictionary<Type, IStoreConfiguration>();
         private readonly Dictionary<Type, IStoreExtension> m_ExtensionMap = new Dictionary<Type, IStoreExtension>();
         private IStore m_Store;
-        private ICatalogProvider m_CatalogProvider;
 
         public PurchasingFactory(IPurchasingModule first, params IPurchasingModule[] remainingModules)
         {
@@ -102,21 +100,6 @@ namespace UnityEngine.Purchasing
             }
 
             throw new ArgumentException("No binding for type " + t);
-        }
-
-        public void SetCatalogProvider(ICatalogProvider provider)
-        {
-            m_CatalogProvider = provider;
-        }
-
-        public void SetCatalogProviderFunction(Action<Action<HashSet<ProductDefinition>>> func)
-        {
-            m_CatalogProvider = new SimpleCatalogProvider(func);
-        }
-
-        internal ICatalogProvider GetCatalogProvider()
-        {
-            return m_CatalogProvider;
         }
     }
 }

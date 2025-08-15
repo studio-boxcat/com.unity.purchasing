@@ -3,25 +3,24 @@
 using System;
 using System.Linq;
 using System.Threading.Tasks;
-using UnityEngine.Purchasing.Interfaces;
 using UnityEngine.Purchasing.Models;
 
 namespace UnityEngine.Purchasing
 {
-    class GoogleFinishTransactionService : IGoogleFinishTransactionService
+    class GoogleFinishTransactionService
     {
-        readonly IGoogleBillingClient m_BillingClient;
-        readonly IGoogleQueryPurchasesService m_GoogleQueryPurchasesService;
+        readonly GoogleBillingClient m_BillingClient;
+        readonly GoogleQueryPurchasesService m_GoogleQueryPurchasesService;
 
-        internal GoogleFinishTransactionService(IGoogleBillingClient billingClient,
-            IGoogleQueryPurchasesService googleQueryPurchasesService)
+        internal GoogleFinishTransactionService(GoogleBillingClient billingClient,
+            GoogleQueryPurchasesService googleQueryPurchasesService)
         {
             m_BillingClient = billingClient;
             m_GoogleQueryPurchasesService = googleQueryPurchasesService;
         }
 
-        public async void FinishTransaction(ProductDefinition product, string purchaseToken,
-            Action<IGoogleBillingResult, IGooglePurchase> onTransactionFinished)
+        public async void FinishTransaction(ProductDefinition? product, string purchaseToken,
+            Action<GoogleBillingResult, GooglePurchase> onTransactionFinished)
         {
             try
             {
@@ -34,7 +33,7 @@ namespace UnityEngine.Purchasing
             catch (InvalidOperationException) { }
         }
 
-        async Task<IGooglePurchase> FindPurchase(string purchaseToken)
+        async Task<GooglePurchase> FindPurchase(string purchaseToken)
         {
             var purchases = await m_GoogleQueryPurchasesService.QueryPurchases();
             var purchaseToFinish =
@@ -43,11 +42,11 @@ namespace UnityEngine.Purchasing
             return purchaseToFinish;
         }
 
-        private void FinishTransactionForPurchase(IGooglePurchase purchase, ProductDefinition product,
+        private void FinishTransactionForPurchase(GooglePurchase purchase, ProductDefinition? product,
             string purchaseToken,
-            Action<IGoogleBillingResult, IGooglePurchase> onTransactionFinished)
+            Action<GoogleBillingResult, GooglePurchase> onTransactionFinished)
         {
-            if (product.type == ProductType.Consumable)
+            if (product!.Value.type == ProductType.Consumable)
             {
                 m_BillingClient.ConsumeAsync(purchaseToken, result => onTransactionFinished(result, purchase));
             }

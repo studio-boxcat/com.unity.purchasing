@@ -1,5 +1,3 @@
-using System;
-
 namespace UnityEngine.Purchasing
 {
     /// <summary>
@@ -7,11 +5,6 @@ namespace UnityEngine.Purchasing
     /// </summary>
     public enum AppStore
     {
-        /// <summary>
-        /// No store specified.
-        /// </summary>
-        NotSpecified,
-
         /// <summary>
         /// GooglePlay Store.
         /// </summary>
@@ -21,13 +14,6 @@ namespace UnityEngine.Purchasing
         /// Amazon App Store.
         /// </summary>
         AmazonAppStore, //
-
-        [Obsolete("AppStore to be removed with UDP deprecation.")]
-        /// <summary>
-        /// Unity Distribution Portal, which supports a set of stores internally.
-        /// Will become deprecated with UDP eventually.
-        /// </summary>
-        UDP, // Last Android store. Also in AppStoreMeta.
 
         /// <summary>
         /// MacOS App Store.
@@ -48,23 +34,5 @@ namespace UnityEngine.Purchasing
         /// A fake store used for testing and Play-In-Editor.
         /// </summary>
         fake
-    }
-
-    // Note these must be synchronized with constants in the AndroidStore enum.
-    /// <summary>
-    /// A meta enum to bookend the app Stores for Android. Mapped from <c>AppStore</c>'s values.
-    /// Is distinct from <c>AppStore</c> to avoid non-unique Enum.Parse and Enum.ToString lookup conflicts.
-    /// </summary>
-    public enum AppStoreMeta
-    {
-        /// <summary>
-        /// The first Android App Store.
-        /// </summary>
-        AndroidStoreStart = AppStore.GooglePlay,
-
-        /// <summary>
-        /// The last Android App Store.
-        /// </summary>
-        AndroidStoreEnd = AppStore.UDP
     }
 }

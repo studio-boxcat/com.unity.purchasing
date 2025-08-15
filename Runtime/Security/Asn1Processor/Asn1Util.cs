@@ -26,8 +26,8 @@
 
 using System;
 using System.IO;
-using System.Text;
-using Microsoft.Win32;
+
+// ReSharper disable MustUseReturnValue
 
 namespace LipingShare.LCLib.Asn1Processor
 {

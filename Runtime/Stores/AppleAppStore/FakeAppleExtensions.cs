@@ -100,11 +100,6 @@ namespace UnityEngine.Purchasing
             return new Dictionary<string, string>();
         }
 
-        public Dictionary<string, string> GetProductDetails()
-        {
-            return new Dictionary<string, string>();
-        }
-
         public void PresentCodeRedemptionSheet()
         {
         }

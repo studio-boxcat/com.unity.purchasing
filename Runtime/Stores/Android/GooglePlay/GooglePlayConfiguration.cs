@@ -2,7 +2,7 @@
 
 using System;
 using UnityEngine.Purchasing.Extension;
-using UnityEngine.Purchasing.Interfaces;
+using UnityEngine.Purchasing.Models;
 
 namespace UnityEngine.Purchasing
 {
@@ -12,7 +12,7 @@ namespace UnityEngine.Purchasing
     class GooglePlayConfiguration : IGooglePlayConfiguration, IGooglePlayConfigurationInternal
     {
         Action? m_InitializationConnectionLister;
-        readonly IGooglePlayStoreService m_GooglePlayStoreService;
+        readonly GooglePlayStoreService m_GooglePlayStoreService;
         Action<Product>? m_DeferredPurchaseAction;
         Action<Product>? m_DeferredProrationUpgradeDowngradeSubscriptionAction;
         Action<int>? m_QueryProductDetailsFailedListener;
@@ -20,7 +20,7 @@ namespace UnityEngine.Purchasing
         bool m_FetchPurchasesAtInitialize = true;
         bool m_FetchPurchasesExcludeDeferred = true;
 
-        public GooglePlayConfiguration(IGooglePlayStoreService googlePlayStoreService)
+        public GooglePlayConfiguration(GooglePlayStoreService googlePlayStoreService)
         {
             m_GooglePlayStoreService = googlePlayStoreService;
         }
@@ -84,7 +84,7 @@ namespace UnityEngine.Purchasing
             return m_FetchPurchasesExcludeDeferred;
         }
 
-        public void NotifyDeferredPurchase(IStoreCallback? storeCallback, IGooglePurchase? purchase, string? receipt, string? transactionId)
+        public void NotifyDeferredPurchase(IStoreCallback? storeCallback, GooglePurchase? purchase, string? receipt, string? transactionId)
         {
             var product = storeCallback?.FindProductById(purchase?.sku);
             if (product != null)

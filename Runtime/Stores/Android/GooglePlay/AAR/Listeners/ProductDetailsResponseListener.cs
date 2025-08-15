@@ -3,9 +3,8 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using Uniject;
+using UnityEngine.Purchasing.Extension;
 using UnityEngine.Purchasing.Models;
-using UnityEngine.Purchasing.Telemetry;
 using UnityEngine.Scripting;
 
 namespace UnityEngine.Purchasing
@@ -17,18 +16,15 @@ namespace UnityEngine.Purchasing
     class ProductDetailsResponseListener : AndroidJavaProxy
     {
         const string k_AndroidProductDetailsResponseListenerClassName = "com.android.billingclient.api.ProductDetailsResponseListener";
-        readonly Action<IGoogleBillingResult, List<AndroidJavaObject>> m_OnProductDetailsResponse;
-        readonly IUtil m_Util;
-        readonly ITelemetryDiagnostics m_TelemetryDiagnostics;
+        readonly Action<GoogleBillingResult, List<AndroidJavaObject>> m_OnProductDetailsResponse;
+        readonly UnityUtil m_Util;
 
         internal ProductDetailsResponseListener(
-            Action<IGoogleBillingResult, List<AndroidJavaObject>> onProductDetailsResponseAction, IUtil util,
-            ITelemetryDiagnostics telemetryDiagnostics)
+            Action<GoogleBillingResult, List<AndroidJavaObject>> onProductDetailsResponseAction, UnityUtil util)
             : base(k_AndroidProductDetailsResponseListenerClassName)
         {
             m_OnProductDetailsResponse = onProductDetailsResponseAction;
             m_Util = util;
-            m_TelemetryDiagnostics = telemetryDiagnostics;
         }
 
         [Preserve]
@@ -45,8 +41,6 @@ namespace UnityEngine.Purchasing
                 }
                 catch (Exception ex)
                 {
-                    m_TelemetryDiagnostics.SendDiagnostic(TelemetryDiagnosticNames.SkuDetailsResponseError, ex);
-
                 }
 
 #if UNITY_2021_2_OR_NEWER

@@ -4,11 +4,9 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using AOT;
-using Uniject;
 using UnityEngine.Purchasing.Extension;
 using UnityEngine.Purchasing.MiniJSON;
 using UnityEngine.Purchasing.Security;
-using UnityEngine.Purchasing.Telemetry;
 
 namespace UnityEngine.Purchasing
 {
@@ -29,9 +27,8 @@ namespace UnityEngine.Purchasing
         Action? m_FetchStorePromotionVisibilityError;
         Action<string, AppleStorePromotionVisibility>? m_FetchStorePromotionVisibilitySuccess;
         INativeAppleStore? m_Native;
-        readonly ITelemetryDiagnostics m_TelemetryDiagnostics;
 
-        static IUtil? s_Util;
+        static UnityUtil? s_Util;
         static AppleStoreImpl? s_Instance;
 
         string? m_CachedAppReceipt;
@@ -40,11 +37,10 @@ namespace UnityEngine.Purchasing
 
         string? m_ProductsJson;
 
-        protected AppleStoreImpl(IUtil util, ITelemetryDiagnostics telemetryDiagnostics)
+        public AppleStoreImpl(UnityUtil util)
         {
             s_Util = util;
             s_Instance = this;
-            m_TelemetryDiagnostics = telemetryDiagnostics;
             m_ProductDescriptionsDeserializer = new AppleJsonProductDescriptionsDeserializer();
         }
 
@@ -128,7 +124,6 @@ namespace UnityEngine.Purchasing
             if (product == null)
             {
                 var ex = new ArgumentNullException(nameof(product));
-                m_TelemetryDiagnostics.SendDiagnostic(TelemetryDiagnosticNames.InvalidProductError, ex);
                 throw ex;
             }
             m_Native?.SetStorePromotionVisibility(product.definition.storeSpecificId, visibility.ToString());
@@ -311,11 +306,6 @@ namespace UnityEngine.Purchasing
         public Dictionary<string, string> GetIntroductoryPriceDictionary()
         {
             return JSONSerializer.DeserializeSubscriptionDescriptions(m_ProductsJson);
-        }
-
-        public Dictionary<string, string> GetProductDetails()
-        {
-            return JSONSerializer.DeserializeProductDetails(m_ProductsJson);
         }
 
         public virtual void PresentCodeRedemptionSheet()
@@ -553,7 +543,6 @@ namespace UnityEngine.Purchasing
                 }
                 catch (Exception ex)
                 {
-                    m_TelemetryDiagnostics.SendDiagnostic(TelemetryDiagnosticNames.ParseReceiptTransactionError, ex);
                 }
             }
             return appleReceipt;

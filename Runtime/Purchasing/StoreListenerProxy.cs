@@ -6,20 +6,18 @@ namespace UnityEngine.Purchasing
     /// <summary>
     /// Forwards transaction information to Unity Analytics.
     /// </summary>
-    internal class StoreListenerProxy : IInternalStoreListener
+    internal class StoreListenerProxy
     {
-        private readonly IAnalyticsClient m_Analytics;
         private readonly IStoreListener m_ForwardTo;
         private readonly IExtensionProvider m_Extensions;
 
-        public StoreListenerProxy(IStoreListener forwardTo, IAnalyticsClient analytics, IExtensionProvider extensions)
+        public StoreListenerProxy(IStoreListener forwardTo, IExtensionProvider extensions)
         {
             m_ForwardTo = forwardTo;
-            m_Analytics = analytics;
             m_Extensions = extensions;
         }
 
-        public void OnInitialized(IStoreController controller)
+        public void OnInitialized(PurchasingManager controller)
         {
             m_ForwardTo.OnInitialized(controller, m_Extensions);
         }
@@ -36,21 +34,7 @@ namespace UnityEngine.Purchasing
 
         public void OnPurchaseFailed(Product i, PurchaseFailureDescription p)
         {
-            m_Analytics.OnPurchaseFailed(i, p);
-            if (m_ForwardTo is IDetailedStoreListener listener)
-            {
-                listener.OnPurchaseFailed(i, p);
-            }
-            else
-            {
-#pragma warning disable 0618
-                m_ForwardTo.OnPurchaseFailed(i, p.reason);
-            }
-        }
-
-        public void SendTransactionEvent(Product product)
-        {
-            m_Analytics.OnPurchaseSucceeded(product);
+            m_ForwardTo.OnPurchaseFailed(i, p);
         }
     }
 }

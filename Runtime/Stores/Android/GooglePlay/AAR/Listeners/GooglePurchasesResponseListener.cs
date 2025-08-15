@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine.Purchasing.Models;
-using UnityEngine.Purchasing.Utils;
 using UnityEngine.Scripting;
 
 namespace UnityEngine.Purchasing
@@ -15,10 +14,10 @@ namespace UnityEngine.Purchasing
     {
         const string k_AndroidPurchasesResponseListenerClassName =
             "com.android.billingclient.api.PurchasesResponseListener";
-        readonly Action<IGoogleBillingResult, IEnumerable<AndroidJavaObject>> m_OnQueryPurchasesResponse;
+        readonly Action<GoogleBillingResult, IEnumerable<AndroidJavaObject>> m_OnQueryPurchasesResponse;
 
         internal GooglePurchasesResponseListener(
-            Action<IGoogleBillingResult, IEnumerable<AndroidJavaObject>> onQueryPurchasesResponse)
+            Action<GoogleBillingResult, IEnumerable<AndroidJavaObject>> onQueryPurchasesResponse)
             : base(k_AndroidPurchasesResponseListenerClassName)
         {
             m_OnQueryPurchasesResponse = onQueryPurchasesResponse;

@@ -1,8 +1,6 @@
-using UnityEngine.Purchasing.Interfaces;
-
 namespace UnityEngine.Purchasing.Models
 {
-    class GooglePurchaseStateEnumProvider : IGooglePurchaseStateEnumProvider
+    class GooglePurchaseStateEnumProvider
     {
         public int Purchased()
         {

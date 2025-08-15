@@ -3,47 +3,41 @@
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.Threading.Tasks;
-using Uniject;
 using UnityEngine.Purchasing.Extension;
-using UnityEngine.Purchasing.Interfaces;
 using UnityEngine.Purchasing.Models;
 using UnityEngine.Purchasing.Stores.Util;
-using UnityEngine.Purchasing.Telemetry;
 
 namespace UnityEngine.Purchasing
 {
-    class GooglePlayStoreService : IGooglePlayStoreService
+    class GooglePlayStoreService
     {
         int m_CurrentConnectionAttempts;
         int m_MaxConnectionAttempts = 3;
-        readonly IGoogleBillingClient m_BillingClient;
-        readonly IBillingClientStateListener m_BillingClientStateListener;
-        readonly IQueryProductDetailsService m_QueryProductDetailsService;
+        readonly GoogleBillingClient m_BillingClient;
+        readonly BillingClientStateListener m_BillingClientStateListener;
+        readonly QueryProductDetailsService m_QueryProductDetailsService;
         readonly ConcurrentQueue<ProductDescriptionQuery> m_ProductsToQuery = new ConcurrentQueue<ProductDescriptionQuery>();
-        readonly ConcurrentQueue<Action<List<IGooglePurchase>>> m_OnPurchaseSucceededQueue = new ConcurrentQueue<Action<List<IGooglePurchase>>>();
-        readonly IGooglePurchaseService m_GooglePurchaseService;
-        readonly IGoogleFinishTransactionService m_GoogleFinishTransactionService;
-        readonly IGoogleQueryPurchasesService m_GoogleQueryPurchasesService;
-        readonly IGoogleLastKnownProductService m_GoogleLastKnownProductService;
-        readonly ITelemetryDiagnostics m_TelemetryDiagnostics;
+        readonly ConcurrentQueue<Action<List<GooglePurchase>>> m_OnPurchaseSucceededQueue = new ConcurrentQueue<Action<List<GooglePurchase>>>();
+        readonly GooglePurchaseService m_GooglePurchaseService;
+        readonly GoogleFinishTransactionService m_GoogleFinishTransactionService;
+        readonly GoogleQueryPurchasesService m_GoogleQueryPurchasesService;
+        readonly GoogleLastKnownProductService m_GoogleLastKnownProductService;
         readonly ILogger m_Logger;
         readonly IRetryPolicy m_RetryPolicy;
-        readonly IUtil m_Util;
+        readonly UnityUtil m_Util;
 
         internal GooglePlayStoreService(
-            IGoogleBillingClient billingClient,
-            IQueryProductDetailsService queryProductDetailsService,
-            IGooglePurchaseService purchaseService,
-            IGoogleFinishTransactionService finishTransactionService,
-            IGoogleQueryPurchasesService queryPurchasesService,
-            IBillingClientStateListener billingClientStateListener,
-            IGoogleLastKnownProductService lastKnownProductService,
-            ITelemetryDiagnostics telemetryDiagnostics,
+            GoogleBillingClient billingClient,
+            QueryProductDetailsService queryProductDetailsService,
+            GooglePurchaseService purchaseService,
+            GoogleFinishTransactionService finishTransactionService,
+            GoogleQueryPurchasesService queryPurchasesService,
+            BillingClientStateListener billingClientStateListener,
+            GoogleLastKnownProductService lastKnownProductService,
             ILogger logger,
             IRetryPolicy retryPolicy,
-            IUtil util)
+            UnityUtil util)
         {
             m_BillingClient = billingClient;
             m_QueryProductDetailsService = queryProductDetailsService;
@@ -52,7 +46,6 @@ namespace UnityEngine.Purchasing
             m_GoogleQueryPurchasesService = queryPurchasesService;
             m_GoogleLastKnownProductService = lastKnownProductService;
             m_BillingClientStateListener = billingClientStateListener;
-            m_TelemetryDiagnostics = telemetryDiagnostics;
             m_Logger = logger;
             m_RetryPolicy = retryPolicy;
             m_Util = util;
@@ -176,7 +169,7 @@ namespace UnityEngine.Purchasing
 
         protected virtual void DequeueFetchPurchases()
         {
-            var purchasesFailedToDequeue = new ConcurrentQueue<Action<List<IGooglePurchase>>>();
+            var purchasesFailedToDequeue = new ConcurrentQueue<Action<List<GooglePurchase>>>();
 
             while (m_OnPurchaseSucceededQueue.TryDequeue(out var onPurchaseSucceed))
             {
@@ -195,7 +188,7 @@ namespace UnityEngine.Purchasing
             AttemptReconnection();
         }
 
-        public virtual void RetrieveProducts(ReadOnlyCollection<ProductDefinition> products, Action<List<ProductDescription>, IGoogleBillingResult> onProductsReceived, Action<GoogleRetrieveProductsFailureReason, GoogleBillingResponseCode> onRetrieveProductsFailed)
+        public virtual void RetrieveProducts(ProductDefinition[] products, Action<List<ProductDescription>, GoogleBillingResult> onProductsReceived, Action<GoogleRetrieveProductsFailureReason, GoogleBillingResponseCode> onRetrieveProductsFailed)
         {
             var currentConnectionState = m_BillingClient.GetConnectionState();
             if (currentConnectionState == GoogleBillingConnectionState.Connected)
@@ -208,7 +201,7 @@ namespace UnityEngine.Purchasing
             }
         }
 
-        void HandleRetrieveProductsNotConnected(ReadOnlyCollection<ProductDefinition> products, Action<List<ProductDescription>, IGoogleBillingResult> onProductsReceived, Action<GoogleRetrieveProductsFailureReason, GoogleBillingResponseCode> onRetrieveProductsFailed)
+        void HandleRetrieveProductsNotConnected(ProductDefinition[] products, Action<List<ProductDescription>, GoogleBillingResult> onProductsReceived, Action<GoogleRetrieveProductsFailureReason, GoogleBillingResponseCode> onRetrieveProductsFailed)
         {
             if (m_BillingClient.GetConnectionState() == GoogleBillingConnectionState.Disconnected)
             {
@@ -239,12 +232,12 @@ namespace UnityEngine.Purchasing
             m_GooglePurchaseService.Purchase(product, oldProduct, desiredProrationMode);
         }
 
-        public void FinishTransaction(ProductDefinition product, string purchaseToken, Action<IGoogleBillingResult, IGooglePurchase> onTransactionFinished)
+        public void FinishTransaction(ProductDefinition? product, string purchaseToken, Action<GoogleBillingResult, GooglePurchase> onTransactionFinished)
         {
             m_GoogleFinishTransactionService.FinishTransaction(product, purchaseToken, onTransactionFinished);
         }
 
-        public async void FetchPurchases(Action<List<IGooglePurchase>> onQueryPurchaseSucceed)
+        public async void FetchPurchases(Action<List<GooglePurchase>> onQueryPurchaseSucceed)
         {
             try
             {
@@ -252,11 +245,10 @@ namespace UnityEngine.Purchasing
             }
             catch (Exception ex)
             {
-                m_TelemetryDiagnostics.SendDiagnostic(TelemetryDiagnosticNames.FetchPurchasesError, ex);
             }
         }
 
-        async Task TryFetchPurchases(Action<List<IGooglePurchase>> onQueryPurchaseSucceed)
+        async Task TryFetchPurchases(Action<List<GooglePurchase>> onQueryPurchaseSucceed)
         {
             if (onQueryPurchaseSucceed == null)
             {
@@ -275,7 +267,7 @@ namespace UnityEngine.Purchasing
             }
         }
 
-        public IGooglePurchase? GetPurchase(string purchaseToken, string skuType)
+        public GooglePurchase? GetPurchase(string purchaseToken, string skuType)
         {
             return m_GoogleQueryPurchasesService.GetPurchaseByToken(purchaseToken, skuType);
         }

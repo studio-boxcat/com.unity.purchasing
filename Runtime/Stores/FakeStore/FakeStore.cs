@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
+using System.Threading.Tasks;
 using UnityEngine.Purchasing.Extension;
 
 namespace UnityEngine.Purchasing
@@ -40,8 +41,6 @@ namespace UnityEngine.Purchasing
         public const string Name = "fake";
         private IStoreCallback m_Biller;
         private readonly List<string> m_PurchasedProducts = new List<string>();
-        public bool purchaseCalled;
-        public bool restoreCalled;
         public string unavailableProductId { get; set; }
         public FakeStoreUIMode UIMode = FakeStoreUIMode.Default; // Requires UIFakeStore
 
@@ -69,17 +68,6 @@ namespace UnityEngine.Purchasing
                 if (unavailableProductId != product.id)
                 {
                     var metadata = new ProductMetadata("$0.01", "Fake title for " + product.id, "Fake description", "USD", 0.01m);
-                    var catalog = ProductCatalog.LoadDefaultCatalog();
-                    if (catalog != null)
-                    {
-                        foreach (var item in catalog.allProducts)
-                        {
-                            if (item.id == product.id)
-                            {
-                                metadata = new ProductMetadata(item.googlePrice.value.ToString(), item.defaultDescription.Title, item.defaultDescription.Description, "USD", item.googlePrice.value);
-                            }
-                        }
-                    }
                     products.Add(new ProductDescription(product.storeSpecificId, metadata));
                 }
             }
@@ -128,7 +116,6 @@ namespace UnityEngine.Purchasing
 
         void FakePurchase(ProductDefinition product, string developerPayload)
         {
-            purchaseCalled = true;
             // Our billing systems should only keep track of non consumables.
             if (product.type != ProductType.Consumable)
             {
@@ -158,13 +145,13 @@ namespace UnityEngine.Purchasing
             if (!StartUI<PurchaseFailureReason>(product, DialogType.Purchase, handleAllowPurchase))
             {
                 // Default non-UI FakeStore purchase behavior is to succeed
-                handleAllowPurchase(true, (PurchaseFailureReason)Enum.Parse(typeof(PurchaseFailureReason), "Unknown"));
+                // XXX: simulate a delay
+                Task.Delay(30).ContinueWith(_ => handleAllowPurchase(true, (PurchaseFailureReason)Enum.Parse(typeof(PurchaseFailureReason), "Unknown")));
             }
         }
 
         public void RestoreTransactions(Action<bool, string> callback)
         {
-            restoreCalled = true;
             foreach (var product in m_PurchasedProducts)
             {
                 m_Biller.OnPurchaseSucceeded(product, /*lang=json,strict*/ "{ \"this\" : \"is a fake receipt\" }", "1");
@@ -180,7 +167,7 @@ namespace UnityEngine.Purchasing
             // we need this for INativeStore but won't be using
         }
 
-        public override void FinishTransaction(ProductDefinition product, string transactionId)
+        public override void FinishTransaction(ProductDefinition? product, string transactionId)
         {
         }
 

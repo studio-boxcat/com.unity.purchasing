@@ -1,12 +1,11 @@
 using System;
-using Uniject;
 using UnityEngine.Purchasing.Extension;
 
 namespace UnityEngine.Purchasing
 {
-    internal class NativeStoreProvider : INativeStoreProvider
+    internal class NativeStoreProvider
     {
-        public INativeStore GetAndroidStore(IUnityCallback callback, AppStore store, IPurchasingBinder binder, IUtil util)
+        public INativeStore GetAndroidStore(IUnityCallback callback, AppStore store, IPurchasingBinder binder, UnityUtil util)
         {
             INativeStore nativeStore;
             try
@@ -27,7 +26,7 @@ namespace UnityEngine.Purchasing
         }
 
         private INativeStore GetAndroidStoreHelper(IUnityCallback callback, AppStore store, IPurchasingBinder binder,
-            IUtil util)
+            UnityUtil util)
         {
             switch (store)
             {
@@ -43,24 +42,6 @@ namespace UnityEngine.Purchasing
                         binder.RegisterConfiguration<IAmazonConfiguration>(extensions);
                         return new AndroidJavaStore(instance);
                     }
-
-                case AppStore.UDP:
-                {
-                    var udpIapBridge = UdpIapBridgeInterface.GetClassType();
-                    if (udpIapBridge != null)
-                    {
-                        var udpImpl = new UDPImpl();
-                        var udpBindings = new UDPBindings();
-                        udpImpl.SetNativeStore(udpBindings);
-                        binder.RegisterExtension<IUDPExtensions>(udpImpl);
-                        return udpBindings;
-                    }
-                    else
-                    {
-                        Debug.LogError("Cannot set Android target to UDP. Make sure you have installed UDP in your project");
-                        throw new NotImplementedException();
-                    }
-                }
             }
 
             throw new NotImplementedException();

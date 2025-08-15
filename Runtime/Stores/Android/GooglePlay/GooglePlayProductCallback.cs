@@ -1,10 +1,8 @@
 #nullable enable
 
-using UnityEngine.Purchasing.Interfaces;
-
 namespace UnityEngine.Purchasing
 {
-    class GooglePlayProductCallback : IGoogleProductCallback
+    class GooglePlayProductCallback
     {
         IGooglePlayConfigurationInternal? m_GooglePlayConfigurationInternal;
 

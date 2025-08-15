@@ -1,10 +1,8 @@
 #nullable enable
 
-using UnityEngine.Purchasing.Interfaces;
-
 namespace UnityEngine.Purchasing
 {
-    class GoogleLastKnownProductService : IGoogleLastKnownProductService
+    class GoogleLastKnownProductService
     {
         public string? LastKnownOldProductId { get; set; }
         public string? LastKnownProductId { get; set; }

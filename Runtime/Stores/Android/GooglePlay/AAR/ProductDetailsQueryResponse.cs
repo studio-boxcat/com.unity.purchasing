@@ -1,13 +1,12 @@
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
-using UnityEngine.Purchasing.Interfaces;
 using UnityEngine.Purchasing.Models;
 namespace UnityEngine.Purchasing
 {
-    class ProductDetailsQueryResponse : IProductDetailsQueryResponse
+    class ProductDetailsQueryResponse
     {
-        readonly ConcurrentBag<(IGoogleBillingResult, IEnumerable<AndroidJavaObject>)> m_Responses = new ConcurrentBag<(IGoogleBillingResult, IEnumerable<AndroidJavaObject>)>();
+        readonly ConcurrentBag<(GoogleBillingResult, IEnumerable<AndroidJavaObject>)> m_Responses = new ConcurrentBag<(GoogleBillingResult, IEnumerable<AndroidJavaObject>)>();
 
         ~ProductDetailsQueryResponse()
         {
@@ -28,7 +27,7 @@ namespace UnityEngine.Purchasing
 #endif
         }
 
-        public void AddResponse(IGoogleBillingResult billingResult, IEnumerable<AndroidJavaObject> productDetails)
+        public void AddResponse(GoogleBillingResult billingResult, IEnumerable<AndroidJavaObject> productDetails)
         {
 #if UNITY_2021_2_OR_NEWER
             m_Responses.Add((billingResult, productDetails.Select(product => product.CloneReference()).ToList()));
@@ -48,12 +47,12 @@ namespace UnityEngine.Purchasing
             return m_Responses.Select(response => response.Item1).Any(IsRecoverable);
         }
 
-        public IGoogleBillingResult GetGoogleBillingResult()
+        public GoogleBillingResult GetGoogleBillingResult()
         {
             return m_Responses.Select(response => response.Item1).FirstOrDefault(response => response.responseCode != GoogleBillingResponseCode.Ok);
         }
 
-        static bool IsRecoverable(IGoogleBillingResult billingResult)
+        static bool IsRecoverable(GoogleBillingResult billingResult)
         {
             return billingResult.responseCode == GoogleBillingResponseCode.ServiceUnavailable || billingResult.responseCode == GoogleBillingResponseCode.DeveloperError;
         }

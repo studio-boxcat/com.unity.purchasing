@@ -1,5 +1,4 @@
-using System;
-using Uniject;
+using UnityEngine.Purchasing.Extension;
 
 namespace UnityEngine.Purchasing
 {
@@ -10,9 +9,9 @@ namespace UnityEngine.Purchasing
     internal class ScriptingUnityCallback : IUnityCallback
     {
         private readonly IUnityCallback forwardTo;
-        private readonly IUtil util;
+        private readonly UnityUtil util;
 
-        public ScriptingUnityCallback(IUnityCallback forwardTo, IUtil util)
+        public ScriptingUnityCallback(IUnityCallback forwardTo, UnityUtil util)
         {
             this.forwardTo = forwardTo;
             this.util = util;

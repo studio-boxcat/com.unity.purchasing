@@ -1,29 +1,26 @@
-using System.Collections.ObjectModel;
-using Uniject;
 using UnityEngine.Purchasing.Extension;
-using UnityEngine.Purchasing.Interfaces;
 
 namespace UnityEngine.Purchasing
 {
-    class GooglePlayStore : AbstractStore
+    class GooglePlayStore : IStore
     {
-        readonly IGooglePlayStoreRetrieveProductsService m_RetrieveProductsService;
-        readonly IGooglePlayStorePurchaseService m_StorePurchaseService;
-        readonly IGoogleFetchPurchases m_FetchPurchases;
-        readonly IGooglePlayStoreFinishTransactionService m_FinishTransactionService;
-        readonly IGooglePurchaseCallback m_GooglePurchaseCallback;
+        readonly GooglePlayStoreRetrieveProductsService m_RetrieveProductsService;
+        readonly GooglePlayStorePurchaseService m_StorePurchaseService;
+        readonly GoogleFetchPurchases m_FetchPurchases;
+        readonly GooglePlayStoreFinishTransactionService m_FinishTransactionService;
+        readonly GooglePlayPurchaseCallback m_GooglePurchaseCallback;
         readonly IGooglePlayStoreExtensionsInternal m_GooglePlayStoreExtensions;
         readonly IGooglePlayConfigurationInternal m_GooglePlayConfigurationInternal;
-        readonly IUtil m_Util;
+        readonly UnityUtil m_Util;
 
-        public GooglePlayStore(IGooglePlayStoreRetrieveProductsService retrieveProductsService,
-            IGooglePlayStorePurchaseService storePurchaseService,
-            IGoogleFetchPurchases fetchPurchases,
-            IGooglePlayStoreFinishTransactionService transactionService,
-            IGooglePurchaseCallback googlePurchaseCallback,
+        public GooglePlayStore(GooglePlayStoreRetrieveProductsService retrieveProductsService,
+            GooglePlayStorePurchaseService storePurchaseService,
+            GoogleFetchPurchases fetchPurchases,
+            GooglePlayStoreFinishTransactionService transactionService,
+            GooglePlayPurchaseCallback googlePurchaseCallback,
             IGooglePlayConfigurationInternal googlePlayConfigurationInternal,
             IGooglePlayStoreExtensionsInternal googlePlayStoreExtensions,
-            IUtil util)
+            UnityUtil util)
         {
             m_Util = util;
             m_RetrieveProductsService = retrieveProductsService;
@@ -39,7 +36,7 @@ namespace UnityEngine.Purchasing
         /// Init GooglePlayStore
         /// </summary>
         /// <param name="callback">The `IStoreCallback` will be call when receiving events from the google store</param>
-        public override void Initialize(IStoreCallback callback)
+        public virtual void Initialize(IStoreCallback callback)
         {
             var scriptingStoreCallback = new ScriptingStoreCallback(callback, m_Util);
             m_RetrieveProductsService.SetStoreCallback(scriptingStoreCallback);
@@ -53,7 +50,7 @@ namespace UnityEngine.Purchasing
         /// Call the Google Play Store to retrieve the store products. The `IStoreCallback` will be call with the retrieved products.
         /// </summary>
         /// <param name="products">The catalog of products to retrieve the store information from</param>
-        public override void RetrieveProducts(ReadOnlyCollection<ProductDefinition> products)
+        public virtual void RetrieveProducts(ProductDefinition[] products)
         {
             var shouldFetchPurchases = ShouldFetchPurchasesNext();
 
@@ -82,7 +79,7 @@ namespace UnityEngine.Purchasing
         /// </summary>
         /// <param name="product">The product to buy</param>
         /// <param name="dummy">No longer used / required, since fraud prevention is handled by the Google SDK now</param>
-        public override void Purchase(ProductDefinition product, string dummy)
+        public virtual void Purchase(ProductDefinition product, string dummy)
         {
             m_StorePurchaseService.Purchase(product);
         }
@@ -92,7 +89,7 @@ namespace UnityEngine.Purchasing
         /// </summary>
         /// <param name="product">Product to consume</param>
         /// <param name="transactionId">Transaction / order id</param>
-        public override void FinishTransaction(ProductDefinition product, string transactionId)
+        public virtual void FinishTransaction(ProductDefinition? product, string transactionId)
         {
             m_FinishTransactionService.FinishTransaction(product, transactionId);
         }

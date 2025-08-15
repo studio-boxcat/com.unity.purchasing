@@ -1,14 +1,8 @@
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
-using Uniject;
-using UnityEngine;
 using UnityEngine.EventSystems;
-using UnityEngine.Purchasing;
-using UnityEngine.Purchasing.Extension;
-using UnityEngine.UI;
 
 namespace UnityEngine.Purchasing
 {
@@ -27,19 +21,6 @@ namespace UnityEngine.Purchasing
         GameObject m_UIFakeStoreWindowObject;
 
         GameObject m_EventSystem; // Dynamically created. Auto-null'd by UI system.
-
-#pragma warning disable 0414
-        readonly IUtil m_Util;
-#pragma warning restore 0414
-
-        public UIFakeStore()
-        {
-        }
-
-        public UIFakeStore(IUtil util)
-        {
-            m_Util = util;
-        }
 
         /// <summary>
         /// Creates and displays a modal dialog UI. Note pointer events can "drill through" the

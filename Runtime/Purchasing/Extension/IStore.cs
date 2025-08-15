@@ -1,6 +1,3 @@
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
-
 namespace UnityEngine.Purchasing.Extension
 {
     /// <summary>
@@ -20,7 +17,7 @@ namespace UnityEngine.Purchasing.Extension
         /// asynchronously with results returned via <c>IStoreCallback</c>.
         /// </summary>
         /// <param name="products"> The collection of products desired </param>
-        void RetrieveProducts(ReadOnlyCollection<ProductDefinition> products);
+        void RetrieveProducts(ProductDefinition[] products);
 
         /// <summary>
         /// Handle a purchase request from a user.
@@ -38,6 +35,6 @@ namespace UnityEngine.Purchasing.Extension
         /// </summary>
         /// <param name="product"> The product purchased </param>
         /// <param name="transactionId"> The id of the transaction </param>
-        void FinishTransaction(ProductDefinition product, string transactionId);
+        void FinishTransaction(ProductDefinition? product, string transactionId);
     }
 }

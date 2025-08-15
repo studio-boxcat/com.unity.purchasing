@@ -1,29 +1,24 @@
 #nullable enable
-using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using UnityEngine.Purchasing.Extension;
-using UnityEngine.Purchasing.Interfaces;
 using UnityEngine.Purchasing.Models;
-using UnityEngine.Purchasing.Security;
-using UnityEngine.Purchasing.Telemetry;
 
 namespace UnityEngine.Purchasing
 {
-    class GooglePlayStoreRetrieveProductsService : IGooglePlayStoreRetrieveProductsService
+    class GooglePlayStoreRetrieveProductsService
     {
-        readonly IGooglePlayStoreService m_GooglePlayStoreService;
-        readonly IGoogleFetchPurchases m_GoogleFetchPurchases;
+        readonly GooglePlayStoreService m_GooglePlayStoreService;
+        readonly GoogleFetchPurchases m_GoogleFetchPurchases;
         IStoreCallback? m_StoreCallback;
         readonly IGooglePlayConfigurationInternal m_GooglePlayConfigurationInternal;
-        readonly IGooglePlayStoreExtensions m_GooglePlayStoreExtensions;
+        readonly GooglePlayStoreExtensions m_GooglePlayStoreExtensions;
         bool m_HasInitiallyRetrievedProducts;
         bool m_RetrieveProductsFailed;
 
-        internal GooglePlayStoreRetrieveProductsService(IGooglePlayStoreService googlePlayStoreService,
-            IGoogleFetchPurchases googleFetchPurchases,
+        internal GooglePlayStoreRetrieveProductsService(GooglePlayStoreService googlePlayStoreService,
+            GoogleFetchPurchases googleFetchPurchases,
             IGooglePlayConfigurationInternal googlePlayConfigurationInternal,
-            IGooglePlayStoreExtensions googlePlayStoreExtensions)
+            GooglePlayStoreExtensions googlePlayStoreExtensions)
         {
             m_GooglePlayStoreService = googlePlayStoreService;
             m_GoogleFetchPurchases = googleFetchPurchases;
@@ -39,7 +34,7 @@ namespace UnityEngine.Purchasing
             m_StoreCallback = storeCallback;
         }
 
-        public void RetrieveProducts(ReadOnlyCollection<ProductDefinition> products, bool wantPurchases = true)
+        public void RetrieveProducts(ProductDefinition[] products, bool wantPurchases = true)
         {
             if (wantPurchases)
             {
@@ -51,7 +46,7 @@ namespace UnityEngine.Purchasing
             }
         }
 
-        void OnProductsRetrievedWithPurchaseFetch(List<ProductDescription> retrievedProducts, IGoogleBillingResult billingResult)
+        void OnProductsRetrievedWithPurchaseFetch(List<ProductDescription> retrievedProducts, GoogleBillingResult billingResult)
         {
             if (billingResult != null && retrievedProducts.Count == 0 && billingResult.responseCode != GoogleBillingResponseCode.Ok)
             {
@@ -68,7 +63,7 @@ namespace UnityEngine.Purchasing
             });
         }
 
-        void OnProductsRetrieved(List<ProductDescription> retrievedProducts, IGoogleBillingResult billingResult)
+        void OnProductsRetrieved(List<ProductDescription> retrievedProducts, GoogleBillingResult billingResult)
         {
             if (billingResult != null && retrievedProducts.Count == 0 && billingResult.responseCode != GoogleBillingResponseCode.Ok)
             {

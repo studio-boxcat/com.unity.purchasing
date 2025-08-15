@@ -1,30 +1,22 @@
 using System;
 using System.Collections.Generic;
-using Uniject;
-using UnityEngine.Purchasing.Interfaces;
 using UnityEngine.Purchasing.Models;
-using UnityEngine.Purchasing.Telemetry;
 
 namespace UnityEngine.Purchasing
 {
-    class ProductDetailsResponseConsolidator : IProductDetailsResponseConsolidator
+    class ProductDetailsResponseConsolidator
     {
         const int k_RequiredNumberOfCallbacks = 2;
         int m_NumberReceivedCallbacks;
-        readonly Action<IProductDetailsQueryResponse> m_OnProductDetailsResponseConsolidated;
-        readonly IProductDetailsQueryResponse m_Responses = new ProductDetailsQueryResponse();
-        readonly IUtil m_Util;
-        readonly ITelemetryDiagnostics m_TelemetryDiagnostics;
+        readonly Action<ProductDetailsQueryResponse> m_OnProductDetailsResponseConsolidated;
+        readonly ProductDetailsQueryResponse m_Responses = new ProductDetailsQueryResponse();
 
-        internal ProductDetailsResponseConsolidator(IUtil util, ITelemetryDiagnostics telemetryDiagnostics,
-            Action<IProductDetailsQueryResponse> onProductDetailsResponseConsolidated)
+        internal ProductDetailsResponseConsolidator(Action<ProductDetailsQueryResponse> onProductDetailsResponseConsolidated)
         {
-            m_Util = util;
             m_OnProductDetailsResponseConsolidated = onProductDetailsResponseConsolidated;
-            m_TelemetryDiagnostics = telemetryDiagnostics;
         }
 
-        public void Consolidate(IGoogleBillingResult billingResult, IEnumerable<AndroidJavaObject> productDetails)
+        public void Consolidate(GoogleBillingResult billingResult, IEnumerable<AndroidJavaObject> productDetails)
         {
             try
             {
@@ -39,7 +31,6 @@ namespace UnityEngine.Purchasing
             }
             catch (Exception ex)
             {
-                m_TelemetryDiagnostics.SendDiagnostic(TelemetryDiagnosticNames.SkuDetailsResponseConsolidatorError, ex);
             }
         }
     }

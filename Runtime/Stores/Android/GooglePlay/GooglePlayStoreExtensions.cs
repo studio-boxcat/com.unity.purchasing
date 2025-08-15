@@ -2,29 +2,25 @@
 
 using System;
 using UnityEngine.Purchasing.Extension;
-using UnityEngine.Purchasing.Interfaces;
 using UnityEngine.Purchasing.Models;
 using UnityEngine.Purchasing.Security;
-using UnityEngine.Purchasing.Telemetry;
 
 namespace UnityEngine.Purchasing
 {
     class GooglePlayStoreExtensions : IGooglePlayStoreExtensions, IGooglePlayStoreExtensionsInternal
     {
-        readonly IGooglePlayStoreService m_GooglePlayStoreService;
-        readonly IGooglePurchaseStateEnumProvider m_GooglePurchaseStateEnumProvider;
-        readonly ITelemetryDiagnostics m_TelemetryDiagnostics;
+        readonly GooglePlayStoreService m_GooglePlayStoreService;
+        readonly GooglePurchaseStateEnumProvider m_GooglePurchaseStateEnumProvider;
         readonly ILogger m_Logger;
         IStoreCallback? m_StoreCallback;
         readonly Action<Product>? m_DeferredPurchaseAction;
         readonly Action<Product>? m_DeferredProrationUpgradeDowngradeSubscriptionAction;
 
-        internal GooglePlayStoreExtensions(IGooglePlayStoreService googlePlayStoreService, IGooglePurchaseStateEnumProvider googlePurchaseStateEnumProvider, ILogger logger, ITelemetryDiagnostics telemetryDiagnostics)
+        internal GooglePlayStoreExtensions(GooglePlayStoreService googlePlayStoreService, GooglePurchaseStateEnumProvider googlePurchaseStateEnumProvider, ILogger logger)
         {
             m_GooglePlayStoreService = googlePlayStoreService;
             m_GooglePurchaseStateEnumProvider = googlePurchaseStateEnumProvider;
             m_Logger = logger;
-            m_TelemetryDiagnostics = telemetryDiagnostics;
         }
 
         public void UpgradeDowngradeSubscription(string oldSku, string newSku)
@@ -106,7 +102,6 @@ namespace UnityEngine.Purchasing
             }
             catch (Exception ex)
             {
-                m_TelemetryDiagnostics.SendDiagnostic(TelemetryDiagnosticNames.ParseReceiptTransactionError, ex);
                 m_Logger.LogIAPWarning("Cannot parse Google receipt for transaction " + product.transactionID);
                 return false;
             }
@@ -143,7 +138,7 @@ namespace UnityEngine.Purchasing
             return purchase?.obfuscatedProfileId;
         }
 
-        IGooglePurchase? GooglePurchaseFromProduct(Product product)
+        GooglePurchase? GooglePurchaseFromProduct(Product product)
         {
             var skuType = product.definition.type == ProductType.Subscription ? GoogleProductTypeEnum.Sub() : GoogleProductTypeEnum.InApp();
             var purchase = m_GooglePlayStoreService.GetPurchase(product.transactionID, skuType);

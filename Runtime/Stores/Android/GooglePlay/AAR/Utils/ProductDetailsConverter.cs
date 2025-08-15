@@ -3,13 +3,12 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine.Purchasing.Extension;
-using UnityEngine.Purchasing.Interfaces;
 using UnityEngine.Purchasing.MiniJSON;
 using UnityEngine.Purchasing.Models;
 
 namespace UnityEngine.Purchasing.Utils
 {
-    class ProductDetailsConverter : IProductDetailsConverter
+    class ProductDetailsConverter
     {
         public List<ProductDescription> ConvertOnQueryProductDetailsResponse(IEnumerable<AndroidJavaObject> productDetails)
         {

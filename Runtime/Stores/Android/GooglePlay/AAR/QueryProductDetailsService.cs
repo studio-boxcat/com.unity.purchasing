@@ -2,56 +2,48 @@
 
 using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.Linq;
-using Uniject;
 using UnityEngine.Purchasing.Extension;
-using UnityEngine.Purchasing.Interfaces;
 using UnityEngine.Purchasing.Models;
 using UnityEngine.Purchasing.Stores.Util;
-using UnityEngine.Purchasing.Telemetry;
+using UnityEngine.Purchasing.Utils;
 
 namespace UnityEngine.Purchasing
 {
-    class QueryProductDetailsService : IQueryProductDetailsService
+    class QueryProductDetailsService 
     {
-        readonly IGoogleBillingClient m_BillingClient;
-        readonly IGoogleCachedQueryProductDetailsService m_GoogleCachedQueryProductDetailsService;
-        readonly IProductDetailsConverter m_ProductDetailsConverter;
+        readonly GoogleBillingClient m_BillingClient;
+        readonly GoogleCachedQueryProductDetailsService m_GoogleCachedQueryProductDetailsService;
+        readonly ProductDetailsConverter m_ProductDetailsConverter;
         readonly IRetryPolicy m_RetryPolicy;
-        readonly IGoogleProductCallback m_GoogleProductCallback;
-        readonly IUtil m_Util;
-        readonly ITelemetryDiagnostics m_TelemetryDiagnostics;
+        readonly GooglePlayProductCallback m_GoogleProductCallback;
 
-        internal QueryProductDetailsService(IGoogleBillingClient billingClient, IGoogleCachedQueryProductDetailsService googleCachedQueryProductDetailsService,
-            IProductDetailsConverter productDetailsConverter, IRetryPolicy retryPolicy, IGoogleProductCallback googleProductCallback, IUtil util,
-            ITelemetryDiagnostics telemetryDiagnostics)
+        internal QueryProductDetailsService(GoogleBillingClient billingClient, GoogleCachedQueryProductDetailsService googleCachedQueryProductDetailsService,
+            ProductDetailsConverter productDetailsConverter, IRetryPolicy retryPolicy, GooglePlayProductCallback googleProductCallback)
         {
             m_BillingClient = billingClient;
             m_GoogleCachedQueryProductDetailsService = googleCachedQueryProductDetailsService;
             m_ProductDetailsConverter = productDetailsConverter;
             m_RetryPolicy = retryPolicy;
             m_GoogleProductCallback = googleProductCallback;
-            m_Util = util;
-            m_TelemetryDiagnostics = telemetryDiagnostics;
         }
 
 
-        public void QueryAsyncProduct(ProductDefinition product, Action<List<AndroidJavaObject>, IGoogleBillingResult> onProductDetailsResponse)
+        public void QueryAsyncProduct(ProductDefinition product, Action<List<AndroidJavaObject>, GoogleBillingResult> onProductDetailsResponse)
         {
-            QueryAsyncProduct(new List<ProductDefinition>
+            QueryAsyncProduct(new []
             {
                 product
-            }.AsReadOnly(), onProductDetailsResponse);
+            }, onProductDetailsResponse);
         }
 
-        public void QueryAsyncProduct(ReadOnlyCollection<ProductDefinition> products, Action<List<ProductDescription>, IGoogleBillingResult> onProductDetailsResponse)
+        public void QueryAsyncProduct(ProductDefinition[] products, Action<List<ProductDescription>, GoogleBillingResult> onProductDetailsResponse)
         {
             QueryAsyncProduct(products,
                 (productDetails, responseCode) => onProductDetailsResponse(m_ProductDetailsConverter.ConvertOnQueryProductDetailsResponse(productDetails), responseCode));
         }
 
-        public void QueryAsyncProduct(ReadOnlyCollection<ProductDefinition> products, Action<List<AndroidJavaObject>, IGoogleBillingResult> onProductDetailsResponse)
+        public void QueryAsyncProduct(ProductDefinition[] products, Action<List<AndroidJavaObject>, GoogleBillingResult> onProductDetailsResponse)
         {
             var retryCount = 0;
 
@@ -63,7 +55,7 @@ namespace UnityEngine.Purchasing
             }
         }
 
-        void QueryAsyncProductWithRetries(IReadOnlyCollection<ProductDefinition> products, Action<List<AndroidJavaObject>, IGoogleBillingResult> onProductDetailsResponse, Action retryQuery)
+        void QueryAsyncProductWithRetries(ProductDefinition[] products, Action<List<AndroidJavaObject>, GoogleBillingResult> onProductDetailsResponse, Action retryQuery)
         {
             try
             {
@@ -71,14 +63,13 @@ namespace UnityEngine.Purchasing
             }
             catch (Exception ex)
             {
-                m_TelemetryDiagnostics.SendDiagnostic(TelemetryDiagnosticNames.QueryAsyncSkuError, ex);
                 Debug.LogError($"Unity IAP - QueryAsyncProductWithRetries: {ex}");
             }
         }
 
-        void TryQueryAsyncProductWithRetries(IReadOnlyCollection<ProductDefinition> products, Action<List<AndroidJavaObject>, IGoogleBillingResult> onProductDetailsResponse, Action retryQuery)
+        void TryQueryAsyncProductWithRetries(ProductDefinition[] products, Action<List<AndroidJavaObject>, GoogleBillingResult> onProductDetailsResponse, Action retryQuery)
         {
-            var consolidator = new ProductDetailsResponseConsolidator(m_Util, m_TelemetryDiagnostics, productDetailsQueryResponse =>
+            var consolidator = new ProductDetailsResponseConsolidator(productDetailsQueryResponse =>
             {
                 m_GoogleCachedQueryProductDetailsService.AddCachedQueriedProductDetails(productDetailsQueryResponse.ProductDetails());
                 if (ShouldRetryQuery(products, productDetailsQueryResponse))
@@ -94,7 +85,7 @@ namespace UnityEngine.Purchasing
             QuerySubsAsync(products, consolidator);
         }
 
-        bool ShouldRetryQuery(IEnumerable<ProductDefinition> requestedProducts, IProductDetailsQueryResponse queryResponse)
+        bool ShouldRetryQuery(IEnumerable<ProductDefinition> requestedProducts, ProductDetailsQueryResponse queryResponse)
         {
             return !AreAllProductDetailsCached(requestedProducts) && queryResponse.IsRecoverable();
         }
@@ -110,7 +101,7 @@ namespace UnityEngine.Purchasing
             return m_GoogleCachedQueryProductDetailsService.GetCachedQueriedProductDetails(cachedProducts);
         }
 
-        void QueryInAppsAsync(IEnumerable<ProductDefinition> products, IProductDetailsResponseConsolidator consolidator)
+        void QueryInAppsAsync(IEnumerable<ProductDefinition> products, ProductDetailsResponseConsolidator consolidator)
         {
             var productList = products
                 .Where(product => product.type != ProductType.Subscription)
@@ -119,7 +110,7 @@ namespace UnityEngine.Purchasing
             QueryProductDetails(productList, GoogleProductTypeEnum.InApp(), consolidator);
         }
 
-        void QuerySubsAsync(IEnumerable<ProductDefinition> products, IProductDetailsResponseConsolidator consolidator)
+        void QuerySubsAsync(IEnumerable<ProductDefinition> products, ProductDetailsResponseConsolidator consolidator)
         {
             var productList = products
                 .Where(product => product.type == ProductType.Subscription)
@@ -128,7 +119,7 @@ namespace UnityEngine.Purchasing
             QueryProductDetails(productList, GoogleProductTypeEnum.Sub(), consolidator);
         }
 
-        void QueryProductDetails(List<string> productList, string type, IProductDetailsResponseConsolidator consolidator)
+        void QueryProductDetails(List<string> productList, string type, ProductDetailsResponseConsolidator consolidator)
         {
             if (productList.Count == 0)
             {

@@ -2,18 +2,17 @@
 
 using System.Collections.Generic;
 using UnityEngine.Purchasing.Extension;
-using UnityEngine.Purchasing.Interfaces;
 using UnityEngine.Purchasing.Models;
 
 namespace UnityEngine.Purchasing
 {
-    class GooglePurchaseService : IGooglePurchaseService
+    class GooglePurchaseService
     {
-        readonly IGoogleBillingClient m_BillingClient;
-        readonly IGooglePurchaseCallback m_GooglePurchaseCallback;
-        readonly IQueryProductDetailsService m_QueryProductDetailsService;
+        readonly GoogleBillingClient m_BillingClient;
+        readonly GooglePlayPurchaseCallback m_GooglePurchaseCallback;
+        readonly QueryProductDetailsService m_QueryProductDetailsService;
 
-        internal GooglePurchaseService(IGoogleBillingClient billingClient, IGooglePurchaseCallback googlePurchaseCallback, IQueryProductDetailsService queryProductDetailsService)
+        internal GooglePurchaseService(GoogleBillingClient billingClient, GooglePlayPurchaseCallback googlePurchaseCallback, QueryProductDetailsService queryProductDetailsService)
         {
             m_BillingClient = billingClient;
             m_GooglePurchaseCallback = googlePurchaseCallback;
@@ -101,7 +100,7 @@ namespace UnityEngine.Purchasing
             HandleBillingFlowResult(new GoogleBillingResult(billingResult), productToPurchase);
         }
 
-        void HandleBillingFlowResult(IGoogleBillingResult billingResult, AndroidJavaObject sku)
+        void HandleBillingFlowResult(GoogleBillingResult billingResult, AndroidJavaObject sku)
         {
             if (billingResult.responseCode != GoogleBillingResponseCode.Ok)
             {

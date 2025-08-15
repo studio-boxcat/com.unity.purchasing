@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 
 namespace UnityEngine.Purchasing.Extension
@@ -12,13 +11,6 @@ namespace UnityEngine.Purchasing.Extension
         /// For querying product information.
         /// </summary>
         ProductCollection products { get; }
-
-        /// <summary>
-        /// Purchasing unavailable.
-        /// </summary>
-        /// <param name="reason"> The reason the initialization failed. </param>
-        [Obsolete]
-        void OnSetupFailed(InitializationFailureReason reason);
 
         /// <summary>
         /// Purchasing unavailable.

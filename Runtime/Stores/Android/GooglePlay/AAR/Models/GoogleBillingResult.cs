@@ -1,12 +1,10 @@
-using UnityEngine;
-
 namespace UnityEngine.Purchasing.Models
 {
     /// <summary>
     /// This is C# representation of the Java Class BillingResult
     /// <a href="https://developer.android.com/reference/com/android/billingclient/api/BillingResult">See more</a>
     /// </summary>
-    class GoogleBillingResult : IGoogleBillingResult
+    class GoogleBillingResult
     {
         public GoogleBillingResponseCode responseCode { get; }
         public string debugMessage { get; }

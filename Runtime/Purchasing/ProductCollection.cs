@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -10,17 +9,12 @@ namespace UnityEngine.Purchasing
     /// </summary>
     public class ProductCollection
     {
-        private Dictionary<string, Product> m_IdToProduct;
-        private Dictionary<string, Product> m_StoreSpecificIdToProduct;
+        private readonly Dictionary<string, Product> m_IdToProduct;
+        private readonly Dictionary<string, Product> m_StoreSpecificIdToProduct;
 
         internal ProductCollection(Product[] products)
         {
-            AddProducts(products);
-        }
-
-        internal void AddProducts(IEnumerable<Product> products)
-        {
-            set.UnionWith(products);
+            set = new HashSet<Product>(products);
             all = set.ToArray();
             m_IdToProduct = all.ToDictionary(x => x.definition.id);
             m_StoreSpecificIdToProduct = all.ToDictionary(x => x.definition.storeSpecificId);
@@ -29,12 +23,12 @@ namespace UnityEngine.Purchasing
         /// <summary>
         /// The hash set of all products
         /// </summary>
-        public HashSet<Product> set { get; } = new HashSet<Product>();
+        public HashSet<Product> set { get; }
 
         /// <summary>
         /// The array of all products
         /// </summary>
-        public Product[] all { get; private set; }
+        public Product[] all { get; }
 
         /// <summary>
         /// Gets a product matching an id

@@ -1,5 +1,3 @@
-using System;
-
 namespace UnityEngine.Purchasing
 {
     class UnityActivity
