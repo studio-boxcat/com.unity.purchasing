@@ -25,15 +25,20 @@ namespace UnityEngine.Purchasing
 
         public void UpgradeDowngradeSubscription(string oldSku, string newSku)
         {
-            UpgradeDowngradeSubscription(oldSku, newSku, GooglePlayProrationMode.ImmediateWithoutProration);
+            UpgradeDowngradeSubscription(oldSku, newSku, GooglePlayReplacementMode.WithoutProration);
         }
 
         public void UpgradeDowngradeSubscription(string oldSku, string newSku, int desiredProrationMode)
         {
-            UpgradeDowngradeSubscription(oldSku, newSku, (GooglePlayProrationMode)desiredProrationMode);
+            UpgradeDowngradeSubscription(oldSku, newSku, (GooglePlayReplacementMode)desiredProrationMode);
         }
 
-        public virtual void UpgradeDowngradeSubscription(string oldSku, string newSku, GooglePlayProrationMode desiredProrationMode)
+        public void UpgradeDowngradeSubscription(string oldSku, string newSku, GooglePlayProrationMode desiredProrationMode)
+        {
+            UpgradeDowngradeSubscription(oldSku, newSku, (GooglePlayReplacementMode)desiredProrationMode);
+        }
+
+        public virtual void UpgradeDowngradeSubscription(string oldSku, string newSku, GooglePlayReplacementMode desiredReplacementMode)
         {
             var product = m_StoreCallback.FindProductById(newSku);
             var oldProduct = m_StoreCallback.FindProductById(oldSku);
@@ -56,7 +61,7 @@ namespace UnityEngine.Purchasing
             }
             else
             {
-                m_GooglePlayStoreService.Purchase(product.definition, oldProduct, desiredProrationMode);
+                m_GooglePlayStoreService.Purchase(product.definition, oldProduct, desiredReplacementMode);
             }
         }
 
