@@ -145,8 +145,7 @@ namespace UnityEngine.Purchasing
             if (!StartUI<PurchaseFailureReason>(product, DialogType.Purchase, handleAllowPurchase))
             {
                 // Default non-UI FakeStore purchase behavior is to succeed
-                // XXX: simulate a delay
-                Task.Delay(30).ContinueWith(_ => handleAllowPurchase(true, (PurchaseFailureReason)Enum.Parse(typeof(PurchaseFailureReason), "Unknown")));
+                handleAllowPurchase(true, (PurchaseFailureReason)Enum.Parse(typeof(PurchaseFailureReason), "Unknown"));
             }
         }
 
