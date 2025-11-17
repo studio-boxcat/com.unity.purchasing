@@ -67,7 +67,7 @@ namespace UnityEngine.Purchasing
             {
                 if (unavailableProductId != product.id)
                 {
-                    var metadata = new ProductMetadata("$0.01", "Fake title for " + product.id, "Fake description", "USD", 0.01m);
+                    var metadata = new ProductMetadata("$9.99", "Fake title for " + product.id, "Fake description", "USD", 0.01m);
                     products.Add(new ProductDescription(product.storeSpecificId, metadata));
                 }
             }
