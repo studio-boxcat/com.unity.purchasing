@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using UnityEngine;
 using UnityEngine.Purchasing;
 using UnityEngine.Purchasing.Extension;
 
@@ -7,6 +8,9 @@ namespace Stores.Util
 {
     class JsonProductDescriptionsDeserializer
     {
+        // XXX: PlayPassEntitlement considers the localized price 0 is a eligibility requirement. use 99.99 as a fallback to avoid eligibility issues.
+        internal const decimal FallbackPriceForEntitlementSafety = 99.99m;
+
         public List<ProductDescription> DeserializeProductDescriptions(string json)
         {
             var objects = (List<object>)MiniJson.JsonDecode(json);
@@ -41,7 +45,8 @@ namespace Stores.Util
             }
             catch
             {
-                localizedPrice = 0.0m;
+                Debug.LogError($"Unable to parse localizedPrice: title='{data.TryGetString("localizedTitle")}', localizedPrice='{data.TryGetString("localizedPrice")}'");
+                localizedPrice = FallbackPriceForEntitlementSafety;
             }
 
             return new ProductMetadata(
