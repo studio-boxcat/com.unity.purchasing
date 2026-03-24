@@ -26,11 +26,6 @@ namespace UnityEngine.Purchasing
         AppleAppStore,
 
         /// <summary>
-        /// Universal Windows Platform's store.
-        /// </summary>
-        WinRT,
-
-        /// <summary>
         /// A fake store used for testing and Play-In-Editor.
         /// </summary>
         fake

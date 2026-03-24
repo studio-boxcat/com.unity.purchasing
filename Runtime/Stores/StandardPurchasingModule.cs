@@ -4,10 +4,6 @@ using UnityEngine.Purchasing.Extension;
 using UnityEngine.Purchasing.Models;
 using UnityEngine.Purchasing.Utils;
 
-#if UNITY_PURCHASING_GPBL
-using UnityEngine.Purchasing.GooglePlayBilling;
-#endif
-
 namespace UnityEngine.Purchasing
 {
     /// <summary>
@@ -63,10 +59,6 @@ namespace UnityEngine.Purchasing
         /// A property that retrieves the <c>AppStore</c> type.
         /// </summary>
         public AppStore appStore { get; private set; }
-
-        // At some point we should remove this but to do so will cause a compile error
-        // for App developers who used this property directly.
-        private readonly bool usingMockMicrosoft;
 
         /// <summary>
         /// The UI mode for the Fake store, if it's in use.
@@ -289,22 +281,6 @@ namespace UnityEngine.Purchasing
         {
             return m_NativeStoreProvider.GetAndroidStore(store, appStore, m_Binder, util);
         }
-
-#if UNITY_PURCHASING_GPBL
-        private IStore InstantiateGooglePlayBilling()
-        {
-            var gameObject = new GameObject("GooglePlayBillingUtil");
-            Object.DontDestroyOnLoad (gameObject);
-            gameObject.hideFlags = HideFlags.HideInHierarchy | HideFlags.HideInInspector;
-
-            var _util = gameObject.AddComponent<GooglePlayBillingUtil>();
-
-            var store = new GooglePlayStoreImpl(_util);
-            BindExtension((IGooglePlayStoreExtensions) store);
-            BindConfiguration((IGooglePlayConfiguration) store);
-            return store;
-        }
-#endif
 
         private IStore InstantiateApple()
         {
