@@ -203,12 +203,12 @@ namespace UnityEngine.Purchasing
 
                     switch (store)
                     {
-                        case GooglePlay.Name:
+                        case StoreNames.GooglePlay:
                         {
                             return getGooglePlayStoreSubInfo(payload);
                         }
-                        case AppleAppStore.Name:
-                        case MacAppStore.Name:
+                        case StoreNames.AppleAppStore:
+                        case StoreNames.MacAppStore:
                         {
                             if (productId == null)
                             {
@@ -216,7 +216,7 @@ namespace UnityEngine.Purchasing
                             }
                             return getAppleAppStoreSubInfo(payload, productId);
                         }
-                        case AmazonApps.Name:
+                        case StoreNames.AmazonApps:
                         {
                             return getAmazonAppStoreSubInfo(productId);
                         }

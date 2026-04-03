@@ -18,11 +18,11 @@ namespace UnityEngine.Purchasing
             {
                 return appStore switch
                 {
-                    AppStore.GooglePlay => GooglePlay.Name,
-                    AppStore.AmazonAppStore => AmazonApps.Name,
-                    AppStore.AppleAppStore => AppleAppStore.Name,
-                    AppStore.MacAppStore => MacAppStore.Name,
-                    AppStore.fake => FakeStore.Name,
+                    AppStore.GooglePlay => StoreNames.GooglePlay,
+                    AppStore.AmazonAppStore => StoreNames.AmazonApps,
+                    AppStore.AppleAppStore => StoreNames.AppleAppStore,
+                    AppStore.MacAppStore => StoreNames.MacAppStore,
+                    AppStore.fake => StoreNames.Fake,
                     _ => throw new NotSupportedException("Unsupported store: " + appStore)
                 };
             }

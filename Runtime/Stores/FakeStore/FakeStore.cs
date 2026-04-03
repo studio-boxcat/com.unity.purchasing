@@ -8,7 +8,6 @@ namespace UnityEngine.Purchasing
 {
     internal class FakeStore : JSONStore, INativeStore
     {
-        public const string Name = "fake";
         private IStoreCallback m_Biller;
         private readonly List<string> m_PurchasedProducts = new List<string>();
         public string unavailableProductId { get; set; }
@@ -24,7 +23,7 @@ namespace UnityEngine.Purchasing
         public void RetrieveProducts(string json)
         {
             var jsonList = (List<object>)MiniJson.JsonDecode(json);
-            var productDefinitions = jsonList.DecodeJSON(Name);
+            var productDefinitions = jsonList.DecodeJSON(StoreNames.Fake);
             StoreRetrieveProducts(new ReadOnlyCollection<ProductDefinition>(productDefinitions.ToList()));
         }
 
