@@ -1,3 +1,6 @@
+// ReSharper disable InconsistentNaming
+#nullable enable
+
 namespace UnityEngine.Purchasing
 {
     /// <summary>
@@ -11,21 +14,17 @@ namespace UnityEngine.Purchasing
         /// Further metadata may be populated following retrieval from the
         /// store system.
         /// </summary>
-        internal Product(ProductDefinition definition, ProductMetadata metadata, string receipt)
+        internal Product(ProductDefinition definition, ProductMetadata metadata, string? receipt = null)
         {
             this.definition = definition;
             this.metadata = metadata;
             this.receipt = receipt;
         }
 
-        internal Product(ProductDefinition definition, ProductMetadata metadata) : this(definition, metadata, null)
-        {
-        }
-
         /// <summary>
         /// Basic immutable product properties.
         /// </summary>
-        public ProductDefinition definition { get; private set; }
+        public readonly ProductDefinition definition;
 
         /// <summary>
         /// Localized metadata provided by the store system.
@@ -51,14 +50,14 @@ namespace UnityEngine.Purchasing
         /// Consumable's transactionID are not set between app restarts unless it has a pending transaction.
         /// Once a consumable has been acknowledged (ConfirmPendingPurchase) the `transactionID` is removed.
         /// </summary>
-        public string transactionID { get; internal set; }
+        public string? transactionID { get; internal set; }
 
         /// <summary>
         /// A unique identifier for this Apple product's original transaction.
         ///
         /// This will only be set when the Apple product was purchased during this session.
         /// </summary>
-        public string appleOriginalTransactionID { get; internal set; }
+        public string? appleOriginalTransactionID { get; internal set; }
 
         /// <summary>
         /// Indicates if this Apple product is restored.
@@ -79,36 +78,19 @@ namespace UnityEngine.Purchasing
         /// Once a consumable has been acknowledged (ConfirmPendingPurchase) the `receipt` is removed.
         /// Receipts is in JSON format.
         /// </summary>
-        public string receipt { get; internal set; }
+        public string? receipt { get; internal set; }
 
         /// <summary>
         /// Check if this product is equal to another.
         /// </summary>
         /// <param name="obj"> The product to compare with this object. </param>
         /// <returns> True if the products are equal </returns>
-        public override bool Equals(object obj)
-        {
-            if (obj == null)
-            {
-                return false;
-            }
-
-            var p = obj as Product;
-            if (p == null)
-            {
-                return false;
-            }
-
-            return definition.Equals(p.definition);
-        }
+        public override bool Equals(object? obj) => (obj as Product) is { definition: var d } && definition.Equals(d);
 
         /// <summary>
         /// Get the unique Hash representing the product.
         /// </summary>
         /// <returns> The hash code as integer </returns>
-        public override int GetHashCode()
-        {
-            return definition.GetHashCode();
-        }
+        public override int GetHashCode() => definition.GetHashCode();
     }
 }

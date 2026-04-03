@@ -10,12 +10,10 @@ namespace UnityEngine.Purchasing
     {
         readonly GooglePlayStoreService m_GooglePlayStoreService;
         IStoreCallback m_StoreCallback;
-        UnityUtil m_Util;
 
-        internal GoogleFetchPurchases(GooglePlayStoreService googlePlayStoreService, UnityUtil util)
+        internal GoogleFetchPurchases(GooglePlayStoreService googlePlayStoreService)
         {
             m_GooglePlayStoreService = googlePlayStoreService;
-            m_Util = util;
         }
 
         public void SetStoreCallback(IStoreCallback storeCallback)
@@ -71,7 +69,7 @@ namespace UnityEngine.Purchasing
 
             // OnAllPurchasesRetrieved is run on the main thread. In order to have UpdateDeferredProducts happen after
             // it, it needs to also be run on the main thread.
-            m_Util.RunOnMainThread(() => UpdateDeferredProductsByPurchases(deferredPurchases));
+            UnityUtil.RunOnMainThread(() => UpdateDeferredProductsByPurchases(deferredPurchases));
         }
 
         static Func<GooglePurchase, bool> PurchaseIsPurchased()

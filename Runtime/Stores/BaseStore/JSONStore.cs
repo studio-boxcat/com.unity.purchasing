@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Generic;
 using Stores.Util;
 using UnityEngine.Purchasing.Extension;
 
@@ -9,25 +8,12 @@ namespace UnityEngine.Purchasing
     /// Internal store implementation passing store requests from the user through to the underlaying
     /// native store system, and back again. Binds a native store system binding to a callback.
     /// </summary>
-    internal class JSONStore : IStore, IUnityCallback, ITransactionHistoryExtensions
+    internal class JSONStore : IStore, IUnityCallback
     {
         protected IStoreCallback unity;
         private INativeStore m_Store;
 
-        // m_Module is our StandardPurchasingModule, added via reflection to avoid core changes etc.
-        private StandardPurchasingModule m_Module;
-
-        protected ILogger m_Logger;
-
         protected JsonProductDescriptionsDeserializer m_ProductDescriptionsDeserializer;
-
-        // ITransactionHistoryExtensions stuff
-        //
-        // Enhanced error information
-        protected PurchaseFailureDescription m_LastPurchaseFailureDescription;
-        private StoreSpecificPurchaseErrorCode m_LastPurchaseErrorCode = StoreSpecificPurchaseErrorCode.Unknown;
-
-        const string k_StoreSpecificErrorCodeKey = "storeSpecificErrorCode";
 
         /// <summary>
         /// No arg constructor due to cyclical dependency on IUnityCallback.
@@ -42,30 +28,9 @@ namespace UnityEngine.Purchasing
             m_Store = native;
         }
 
-        public void SetModule(StandardPurchasingModule module)
-        {
-            if (module == null)
-            {
-                return;
-            }
-            m_Module = module;
-            m_Logger = module.logger ?? Debug.unityLogger;
-        }
-
         public virtual void Initialize(IStoreCallback callback)
         {
             unity = callback;
-
-            if (m_Module != null)
-            {
-            }
-            else
-            {
-                if (m_Logger != null)
-                {
-                    m_Logger.LogIAPWarning("JSONStore init has no reference to SPM, can't start managed store");
-                }
-            }
         }
 
         public virtual void RetrieveProducts(ProductDefinition[] products)
@@ -110,39 +75,7 @@ namespace UnityEngine.Purchasing
 
         public void OnPurchaseFailed(PurchaseFailureDescription failure, string json = null)
         {
-            m_LastPurchaseFailureDescription = failure;
-            m_LastPurchaseErrorCode = ParseStoreSpecificPurchaseErrorCode(json);
-
             unity.OnPurchaseFailed(failure);
-        }
-
-        public PurchaseFailureDescription GetLastPurchaseFailureDescription()
-        {
-            return m_LastPurchaseFailureDescription;
-        }
-
-        public StoreSpecificPurchaseErrorCode GetLastStoreSpecificPurchaseErrorCode()
-        {
-            return m_LastPurchaseErrorCode;
-        }
-
-        private StoreSpecificPurchaseErrorCode ParseStoreSpecificPurchaseErrorCode(string json)
-        {
-            // If we didn't get any JSON just return Unknown.
-            if (json == null)
-            {
-                return StoreSpecificPurchaseErrorCode.Unknown;
-            }
-
-            // If the dictionary contains a storeSpecificErrorCode, return it, otherwise return Unknown.
-            var purchaseFailureDictionary = MiniJson.JsonDecode(json) as Dictionary<string, object>;
-            if (purchaseFailureDictionary != null && purchaseFailureDictionary.ContainsKey(k_StoreSpecificErrorCodeKey) && Enum.IsDefined(typeof(StoreSpecificPurchaseErrorCode), (string)purchaseFailureDictionary[k_StoreSpecificErrorCodeKey]))
-            {
-                var storeSpecificErrorCodeString = (string)purchaseFailureDictionary[k_StoreSpecificErrorCodeKey];
-                return (StoreSpecificPurchaseErrorCode)Enum.Parse(typeof(StoreSpecificPurchaseErrorCode),
-                    storeSpecificErrorCodeString);
-            }
-            return StoreSpecificPurchaseErrorCode.Unknown;
         }
     }
 }

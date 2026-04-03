@@ -78,12 +78,10 @@ namespace UnityEngine.Purchasing.Models
         readonly AndroidJavaObject m_BillingClient;
         string m_ObfuscatedAccountId;
         string m_ObfuscatedProfileId;
-        readonly UnityUtil m_Util;
 
-        internal GoogleBillingClient(GooglePurchaseUpdatedListener googlePurchaseUpdatedListener, UnityUtil util)
+        internal GoogleBillingClient(GooglePurchaseUpdatedListener googlePurchaseUpdatedListener)
         {
-            m_Util = util;
-            using var builder = GetBillingClientClass().CallStatic<AndroidJavaObject>("newBuilder", UnityActivity.GetCurrentActivity());
+            using var builder = GetBillingClientClass().CallStatic<AndroidJavaObject>("newBuilder", AndroidApplication.UnityActivity);
             builder.Call<AndroidJavaObject>("setListener", googlePurchaseUpdatedListener).Dispose();
             builder.Call<AndroidJavaObject>("enablePendingPurchases").Dispose();
             m_BillingClient = builder.Call<AndroidJavaObject>("build");
@@ -129,7 +127,7 @@ namespace UnityEngine.Purchasing.Models
             Action<GoogleBillingResult, List<AndroidJavaObject>> onProductDetailsResponseAction)
         {
             using var queryProductDetailsParams = QueryProductDetailsParams(products, type);
-            var productDetailsResponseListener = new ProductDetailsResponseListener(onProductDetailsResponseAction, m_Util);
+            var productDetailsResponseListener = new ProductDetailsResponseListener(onProductDetailsResponseAction);
             m_BillingClient.Call("queryProductDetailsAsync", queryProductDetailsParams, productDetailsResponseListener);
         }
 
@@ -172,7 +170,7 @@ namespace UnityEngine.Purchasing.Models
             using var productDetailsParams = productDetailsParamsBuilder.Call<AndroidJavaObject>("build");
             var productDetailsParamsList = new List<AndroidJavaObject> { productDetailsParams }.ToJava();
 
-            return m_BillingClient.Call<AndroidJavaObject>("launchBillingFlow", UnityActivity.GetCurrentActivity(), MakeBillingFlowParams(productDetailsParamsList, oldPurchaseToken, replacementMode));
+            return m_BillingClient.Call<AndroidJavaObject>("launchBillingFlow", AndroidApplication.UnityActivity, MakeBillingFlowParams(productDetailsParamsList, oldPurchaseToken, replacementMode));
         }
 
         AndroidJavaObject MakeBillingFlowParams(AndroidJavaObject productDetailsParamsList, string oldPurchaseToken, GooglePlayReplacementMode? replacementMode)

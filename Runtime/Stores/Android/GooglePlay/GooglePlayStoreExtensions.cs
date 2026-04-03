@@ -7,20 +7,16 @@ using UnityEngine.Purchasing.Security;
 
 namespace UnityEngine.Purchasing
 {
-    class GooglePlayStoreExtensions : IGooglePlayStoreExtensions, IGooglePlayStoreExtensionsInternal
+    class GooglePlayStoreExtensions
     {
         readonly GooglePlayStoreService m_GooglePlayStoreService;
         readonly GooglePurchaseStateEnumProvider m_GooglePurchaseStateEnumProvider;
-        readonly ILogger m_Logger;
         IStoreCallback? m_StoreCallback;
-        readonly Action<Product>? m_DeferredPurchaseAction;
-        readonly Action<Product>? m_DeferredProrationUpgradeDowngradeSubscriptionAction;
 
-        internal GooglePlayStoreExtensions(GooglePlayStoreService googlePlayStoreService, GooglePurchaseStateEnumProvider googlePurchaseStateEnumProvider, ILogger logger)
+        internal GooglePlayStoreExtensions(GooglePlayStoreService googlePlayStoreService, GooglePurchaseStateEnumProvider googlePurchaseStateEnumProvider)
         {
             m_GooglePlayStoreService = googlePlayStoreService;
             m_GooglePurchaseStateEnumProvider = googlePurchaseStateEnumProvider;
-            m_Logger = logger;
         }
 
         public void UpgradeDowngradeSubscription(string oldSku, string newSku)
@@ -29,11 +25,6 @@ namespace UnityEngine.Purchasing
         }
 
         public void UpgradeDowngradeSubscription(string oldSku, string newSku, int desiredProrationMode)
-        {
-            UpgradeDowngradeSubscription(oldSku, newSku, (GooglePlayReplacementMode)desiredProrationMode);
-        }
-
-        public void UpgradeDowngradeSubscription(string oldSku, string newSku, GooglePlayProrationMode desiredProrationMode)
         {
             UpgradeDowngradeSubscription(oldSku, newSku, (GooglePlayReplacementMode)desiredProrationMode);
         }
@@ -70,7 +61,7 @@ namespace UnityEngine.Purchasing
         {
             if (callback == null)
             {
-                m_Logger.LogIAPError("RestoreTransactions called with a null callback. Please provide a callback to avoid null pointer exceptions");
+                UnityUtil.LogError("RestoreTransactions called with a null callback. Please provide a callback to avoid null pointer exceptions");
             }
             m_GooglePlayStoreService.FetchPurchases(_ => { callback?.Invoke(true); });
         }
@@ -79,7 +70,7 @@ namespace UnityEngine.Purchasing
         {
             if (callback == null)
             {
-                m_Logger.LogIAPError("RestoreTransactions called with a null callback. Please provide a callback to avoid null pointer exceptions");
+                UnityUtil.LogError("RestoreTransactions called with a null callback. Please provide a callback to avoid null pointer exceptions");
             }
             m_GooglePlayStoreService.FetchPurchases(_ => { callback?.Invoke(true, null); });
         }
@@ -97,7 +88,7 @@ namespace UnityEngine.Purchasing
         {
             if (product == null)
             {
-                m_Logger.LogIAPWarning("IsPurchasedProductDeferred: the product is null.");
+                UnityUtil.LogWarning("IsPurchasedProductDeferred: the product is null.");
                 return false;
             }
 
@@ -107,7 +98,7 @@ namespace UnityEngine.Purchasing
             }
             catch (Exception ex)
             {
-                m_Logger.LogIAPWarning("Cannot parse Google receipt for transaction " + product.transactionID);
+                UnityUtil.LogWarning("Cannot parse Google receipt for transaction " + product.transactionID);
                 return false;
             }
         }

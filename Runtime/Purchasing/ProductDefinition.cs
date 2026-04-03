@@ -42,6 +42,8 @@ namespace UnityEngine.Purchasing
         /// </summary>
         public readonly ProductType type;
 
+        public bool Equals(ProductDefinition other) => id == other.id;
+
         /// <summary>
         /// Check if this product definition is equal to another.
         /// </summary>
@@ -49,16 +51,13 @@ namespace UnityEngine.Purchasing
         /// <returns> True if the definitions are equal </returns>
         public override bool Equals(object obj)
         {
-            return obj is ProductDefinition p && id == p.id;
+            return obj is ProductDefinition p && Equals(p);
         }
 
         /// <summary>
         /// Get the unique Hash representing the product definition.
         /// </summary>
         /// <returns> The hash code as integer </returns>
-        public override int GetHashCode()
-        {
-            return id.GetHashCode();
-        }
+        public override int GetHashCode() => id.GetHashCode();
     }
 }

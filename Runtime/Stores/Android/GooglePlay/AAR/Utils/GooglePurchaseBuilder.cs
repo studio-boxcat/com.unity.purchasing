@@ -8,12 +8,10 @@ namespace UnityEngine.Purchasing.Utils
     class GooglePurchaseBuilder
     {
         readonly GoogleCachedQueryProductDetailsService m_CachedQueryProductDetailsService;
-        readonly ILogger m_Logger;
 
-        public GooglePurchaseBuilder(GoogleCachedQueryProductDetailsService cachedQueryProductDetailsService, ILogger logger)
+        public GooglePurchaseBuilder(GoogleCachedQueryProductDetailsService cachedQueryProductDetailsService)
         {
             m_CachedQueryProductDetailsService = cachedQueryProductDetailsService;
-            m_Logger = logger;
         }
 
         public IEnumerable<GooglePurchase> BuildPurchases(IEnumerable<AndroidJavaObject> purchases)
@@ -22,9 +20,9 @@ namespace UnityEngine.Purchasing.Utils
                 .IgnoreExceptions<GooglePurchase, ArgumentException>(LogWarningForException).ToList();
         }
 
-        void LogWarningForException(Exception exception)
+        static void LogWarningForException(Exception exception)
         {
-            m_Logger.LogIAPWarning(exception.Message);
+            UnityUtil.LogWarning(exception.Message);
         }
 
         public GooglePurchase BuildPurchase(AndroidJavaObject purchase)

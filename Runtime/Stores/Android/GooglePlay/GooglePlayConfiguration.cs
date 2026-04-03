@@ -9,7 +9,7 @@ namespace UnityEngine.Purchasing
     /// <summary>
     /// Access Google Play store specific configurations.
     /// </summary>
-    class GooglePlayConfiguration : IGooglePlayConfiguration, IGooglePlayConfigurationInternal
+    class GooglePlayConfiguration
     {
         Action? m_InitializationConnectionLister;
         readonly GooglePlayStoreService m_GooglePlayStoreService;
@@ -89,7 +89,7 @@ namespace UnityEngine.Purchasing
             var product = storeCallback?.FindProductById(purchase?.sku);
             if (product != null)
             {
-                ProductPurchaseUpdater.UpdateProductReceiptAndTransactionID(product, receipt, transactionId, GooglePlay.Name);
+                ProductPurchaseUpdater.UpdateProductReceiptAndTransactionID(product, receipt, transactionId, AppStore.GooglePlay);
                 m_DeferredPurchaseAction?.Invoke(product);
             }
         }

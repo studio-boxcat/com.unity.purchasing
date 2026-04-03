@@ -4,16 +4,16 @@ namespace UnityEngine.Purchasing
 {
     class GooglePlayProductCallback
     {
-        IGooglePlayConfigurationInternal? m_GooglePlayConfigurationInternal;
+        GooglePlayConfiguration? m_GooglePlayConfiguration;
 
-        public void SetStoreConfiguration(IGooglePlayConfigurationInternal configuration)
+        public void SetStoreConfiguration(GooglePlayConfiguration configuration)
         {
-            m_GooglePlayConfigurationInternal = configuration;
+            m_GooglePlayConfiguration = configuration;
         }
 
         public void NotifyQueryProductDetailsFailed(int retryCount)
         {
-            m_GooglePlayConfigurationInternal?.NotifyQueryProductDetailsFailed(retryCount);
+            m_GooglePlayConfiguration?.NotifyQueryProductDetailsFailed(retryCount);
         }
     }
 }

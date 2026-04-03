@@ -23,9 +23,7 @@ namespace UnityEngine.Purchasing
         readonly GoogleFinishTransactionService m_GoogleFinishTransactionService;
         readonly GoogleQueryPurchasesService m_GoogleQueryPurchasesService;
         readonly GoogleLastKnownProductService m_GoogleLastKnownProductService;
-        readonly ILogger m_Logger;
         readonly IRetryPolicy m_RetryPolicy;
-        readonly UnityUtil m_Util;
 
         internal GooglePlayStoreService(
             GoogleBillingClient billingClient,
@@ -35,9 +33,7 @@ namespace UnityEngine.Purchasing
             GoogleQueryPurchasesService queryPurchasesService,
             BillingClientStateListener billingClientStateListener,
             GoogleLastKnownProductService lastKnownProductService,
-            ILogger logger,
-            IRetryPolicy retryPolicy,
-            UnityUtil util)
+            IRetryPolicy retryPolicy)
         {
             m_BillingClient = billingClient;
             m_QueryProductDetailsService = queryProductDetailsService;
@@ -46,9 +42,7 @@ namespace UnityEngine.Purchasing
             m_GoogleQueryPurchasesService = queryPurchasesService;
             m_GoogleLastKnownProductService = lastKnownProductService;
             m_BillingClientStateListener = billingClientStateListener;
-            m_Logger = logger;
             m_RetryPolicy = retryPolicy;
-            m_Util = util;
         }
 
         internal void InitConnectionWithGooglePlay()
@@ -88,7 +82,7 @@ namespace UnityEngine.Purchasing
 
         void RetryConnection(Action ActionToRetry)
         {
-            m_Util.RunOnMainThread(() => RetryConnectionAttempt(ActionToRetry));
+            UnityUtil.RunOnMainThread(() => RetryConnectionAttempt(ActionToRetry));
         }
 
         void RetryConnectionAttempt(Action ActionToRetry)
@@ -154,7 +148,7 @@ namespace UnityEngine.Purchasing
                     }
                     default:
                     {
-                        m_Logger.LogIAPError($"GooglePlayStoreService state ({currentConnectionState}) unrecognized, cannot process ProductDescriptionQuery");
+                        UnityUtil.LogError($"GooglePlayStoreService state ({currentConnectionState}) unrecognized, cannot process ProductDescriptionQuery");
                         stop = true;
                         break;
                     }
@@ -252,7 +246,7 @@ namespace UnityEngine.Purchasing
         {
             if (onQueryPurchaseSucceed == null)
             {
-                m_Logger.LogIAPWarning("FetchPurchases called with null callback onQueryPurchaseSucceed");
+                UnityUtil.LogWarning("FetchPurchases called with null callback onQueryPurchaseSucceed");
                 return;
             }
 

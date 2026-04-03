@@ -17,20 +17,18 @@ namespace UnityEngine.Purchasing
     {
         const string k_AndroidProductDetailsResponseListenerClassName = "com.android.billingclient.api.ProductDetailsResponseListener";
         readonly Action<GoogleBillingResult, List<AndroidJavaObject>> m_OnProductDetailsResponse;
-        readonly UnityUtil m_Util;
 
         internal ProductDetailsResponseListener(
-            Action<GoogleBillingResult, List<AndroidJavaObject>> onProductDetailsResponseAction, UnityUtil util)
+            Action<GoogleBillingResult, List<AndroidJavaObject>> onProductDetailsResponseAction)
             : base(k_AndroidProductDetailsResponseListenerClassName)
         {
             m_OnProductDetailsResponse = onProductDetailsResponseAction;
-            m_Util = util;
         }
 
         [Preserve]
         public void onProductDetailsResponse(AndroidJavaObject billingResult, AndroidJavaObject? productDetails)
         {
-            m_Util.RunOnMainThread(() =>
+            UnityUtil.RunOnMainThread(() =>
             {
                 List<AndroidJavaObject>? productDetailsList = null;
 

@@ -48,13 +48,5 @@ namespace UnityEngine.Purchasing.Extension
         /// </summary>
         /// <param name="desc"> The object detailing the purchase failure </param>
         void OnPurchaseFailed(PurchaseFailureDescription desc);
-
-        /// <summary>
-        /// Stores may opt to disable Unity IAP's transaction log if they offer a robust transaction
-        /// system of their own (e.g. Apple).
-        ///
-        /// The default value is 'true'.
-        /// </summary>
-        bool useTransactionLog { get; set; }
     }
 }

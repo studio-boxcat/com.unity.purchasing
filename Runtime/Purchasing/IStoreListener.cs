@@ -37,7 +37,6 @@ namespace UnityEngine.Purchasing
         /// available for accessing purchasing functionality.
         /// </summary>
         /// <param name="controller"> The <c>IStoreController</c> created during initialization. </param>
-        /// <param name="extensions"> The <c>IExtensionProvider</c> created during initialization. </param>
-        void OnInitialized(PurchasingManager controller, IExtensionProvider extensions);
+        void OnInitialized(PurchasingManager controller);
     }
 }

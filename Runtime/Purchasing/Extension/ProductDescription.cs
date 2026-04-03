@@ -1,3 +1,5 @@
+#nullable enable
+
 namespace UnityEngine.Purchasing.Extension
 {
     /// <summary>
@@ -18,7 +20,7 @@ namespace UnityEngine.Purchasing.Extension
         /// <param name="receipt"> The receipt of the purchase of the product. </param>
         /// <param name="transactionId"> The transaction id of the purchase of the product. </param>
         public ProductDescription(string id, ProductMetadata metadata,
-                                  string receipt, string transactionId)
+                                  string? receipt, string? transactionId)
         {
             storeSpecificId = id;
             this.metadata = metadata;
@@ -37,7 +39,7 @@ namespace UnityEngine.Purchasing.Extension
         /// <param name="transactionId"> The transaction id of the purchase of the product. </param>
         /// <param name="type"> The type of the product. </param>
         public ProductDescription(string id, ProductMetadata metadata,
-                                  string receipt, string transactionId, ProductType type)
+                                  string? receipt, string? transactionId, ProductType type)
             : this(id, metadata, receipt, transactionId)
         {
             this.type = type;
@@ -56,7 +58,7 @@ namespace UnityEngine.Purchasing.Extension
         /// <summary>
         /// The store-specific id of this product.
         /// </summary>
-        public string storeSpecificId { get; private set; }
+        public readonly string storeSpecificId;
 
         /// <summary>
         /// The type of the product, with respect to the store.
@@ -68,21 +70,21 @@ namespace UnityEngine.Purchasing.Extension
         /// Otherwise, if this ProductDescription is unknown, type must
         /// be correctly so the product can be handled correctly.
         /// </summary>
-        public ProductType type;
+        public readonly ProductType type;
 
         /// <summary>
         /// The Metadate of the product. Contains store interface information.
         /// </summary>
-        public ProductMetadata metadata { get; private set; }
+        public readonly ProductMetadata metadata;
 
         /// <summary>
         /// The receipt provided on product purchase.
         /// </summary>
-        public string receipt { get; private set; }
+        public readonly string? receipt;
 
         /// <summary>
         /// The transaction id of the purchase of this product.
         /// </summary>
-        public string transactionId { get; set; }
+        public readonly string? transactionId;
     }
 }

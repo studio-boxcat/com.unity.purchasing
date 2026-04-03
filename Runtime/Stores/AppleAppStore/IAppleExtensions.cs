@@ -6,7 +6,7 @@ namespace UnityEngine.Purchasing
     /// <summary>
     /// Access iOS specific functionality.
     /// </summary>
-    public interface IAppleExtensions : IStoreExtension
+    public interface IAppleExtensions
     {
         /// <summary>
         /// Fetch the latest App Receipt from Apple.

@@ -1,3 +1,4 @@
+#nullable enable
 using System;
 using System.IO;
 using System.Text;
@@ -10,12 +11,10 @@ namespace UnityEngine.Purchasing
     /// </summary>
     internal class TransactionLog
     {
-        private readonly ILogger logger;
         private readonly string persistentDataPath;
 
-        public TransactionLog(ILogger logger, string persistentDataPath)
+        public TransactionLog(string? persistentDataPath)
         {
-            this.logger = logger;
             if (!string.IsNullOrEmpty(persistentDataPath))
             {
                 this.persistentDataPath = Path.Combine(Path.Combine(persistentDataPath, "Unity"), "UnityPurchasing");
@@ -30,7 +29,7 @@ namespace UnityEngine.Purchasing
             Directory.Delete(persistentDataPath, true);
         }
 
-        public bool HasRecordOf(string transactionID)
+        public bool HasRecordOf(string? transactionID)
         {
             if (string.IsNullOrEmpty(transactionID) || string.IsNullOrEmpty(persistentDataPath))
             {
@@ -40,7 +39,7 @@ namespace UnityEngine.Purchasing
             return Directory.Exists(GetRecordPath(transactionID));
         }
 
-        public void Record(string transactionID)
+        public void Record(string? transactionID)
         {
             // Consumables have additional de-duplication logic.
             if (!(string.IsNullOrEmpty(transactionID) || string.IsNullOrEmpty(persistentDataPath)))
@@ -54,7 +53,7 @@ namespace UnityEngine.Purchasing
                 {
                     // A wide variety of exceptions can occur, for all of which
                     // nothing is the best course of action.
-                    logger.LogException(recordPathException);
+                    UnityUtil.LogException(recordPathException);
                 }
             }
         }

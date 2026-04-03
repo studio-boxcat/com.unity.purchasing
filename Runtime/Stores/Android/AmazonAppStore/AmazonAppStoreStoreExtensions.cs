@@ -5,7 +5,7 @@ namespace UnityEngine.Purchasing
     /// <summary>
     /// Access Amazon store specific functionality.
     /// </summary>
-    public class AmazonAppStoreStoreExtensions : IAmazonExtensions, IAmazonConfiguration
+    public class AmazonAppStoreStoreExtensions
     {
         private readonly AndroidJavaObject android;
         /// <summary>

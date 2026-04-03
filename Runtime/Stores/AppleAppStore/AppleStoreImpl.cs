@@ -14,7 +14,7 @@ namespace UnityEngine.Purchasing
     /// <summary>
     /// App Store implementation of <see cref="IStore"/>.
     /// </summary>
-    class AppleStoreImpl : JSONStore, IAppleExtensions, IAppleConfiguration
+    class AppleStoreImpl : JSONStore, IAppleExtensions
     {
         Action<Product>? m_DeferredCallback;
         Action<List<Product>>? m_RevokedCallback;
@@ -29,7 +29,6 @@ namespace UnityEngine.Purchasing
         Action<string, AppleStorePromotionVisibility>? m_FetchStorePromotionVisibilitySuccess;
         INativeAppleStore? m_Native;
 
-        static UnityUtil? s_Util;
         static AppleStoreImpl? s_Instance;
 
         string? m_CachedAppReceipt;
@@ -38,9 +37,8 @@ namespace UnityEngine.Purchasing
 
         string? m_ProductsJson;
 
-        public AppleStoreImpl(UnityUtil util)
+        public AppleStoreImpl()
         {
-            s_Util = util;
             s_Instance = this;
             m_ProductDescriptionsDeserializer = new AppleJsonProductDescriptionsDeserializer();
         }
@@ -452,7 +450,7 @@ namespace UnityEngine.Purchasing
         [MonoPInvokeCallback(typeof(UnityPurchasingCallback))]
         private static void MessageCallback(string subject, string payload, string receipt, string transactionId, string originalTransactionId, bool isRestored)
         {
-            s_Util?.RunOnMainThread(() =>
+            UnityUtil.RunOnMainThread(() =>
             {
                 s_Instance?.ProcessMessage(subject, payload, receipt, transactionId, originalTransactionId, isRestored);
             });

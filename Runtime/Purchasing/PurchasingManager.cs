@@ -1,6 +1,8 @@
+// ReSharper disable InconsistentNaming
 #nullable enable
 using System.Collections.Generic;
 using System.Linq;
+using UnityEngine.Assertions;
 using UnityEngine.Purchasing.Extension;
 
 namespace UnityEngine.Purchasing
@@ -10,46 +12,23 @@ namespace UnityEngine.Purchasing
     /// </summary>
     public class PurchasingManager : IStoreCallback
     {
+        private readonly AppStore m_StoreType;
         private readonly IStore m_Store;
-        private StoreListenerProxy? m_Listener;
-        private readonly ILogger m_Logger;
-        private readonly TransactionLog m_TransactionLog;
-        private readonly string m_StoreName;
+        private IStoreListener? m_Listener;
+        private readonly TransactionLog m_TransactionLog = new(Application.persistentDataPath);
+        private readonly HashSet<string> purchasesProcessedInSession = new();
 
-        private readonly HashSet<string> purchasesProcessedInSession = new HashSet<string>();
-
-        /// <summary>
-        /// Stores may opt to disable Unity IAP's transaction log.
-        /// </summary>
-        public bool useTransactionLog { get; set; }
-
-        internal PurchasingManager(TransactionLog tDb, ILogger logger, IStore store, string storeName)
+        internal PurchasingManager(AppStore storeType, IStore store, ProductDefinition[] products)
         {
-            m_TransactionLog = tDb;
+            Assert.AreEqual(products.Length, products.Select(p => p.id).Distinct().Count(), "Product ids must be unique");
+
+            m_StoreType = storeType;
             m_Store = store;
-            m_Logger = logger;
-            m_StoreName = storeName;
-            useTransactionLog = true;
+            this.products = new ProductCollection(products);
         }
 
         public void InitiatePurchase(Product product)
         {
-            InitiatePurchase(product, string.Empty);
-        }
-
-        public void InitiatePurchase(string? productId)
-        {
-            InitiatePurchase(productId, string.Empty);
-        }
-
-        public void InitiatePurchase(Product? product, string developerPayload)
-        {
-            if (null == product)
-            {
-                m_Logger.LogIAPWarning("Trying to purchase null Product");
-                return;
-            }
-
             if (!product.availableToPurchase)
             {
                 m_Listener?.OnPurchaseFailed(product, new PurchaseFailureDescription(product.definition.id, PurchaseFailureReason.ProductUnavailable,
@@ -57,18 +36,7 @@ namespace UnityEngine.Purchasing
                 return;
             }
 
-            m_Store.Purchase(product.definition, developerPayload);
-        }
-
-        public void InitiatePurchase(string? purchasableId, string developerPayload)
-        {
-            var product = products.WithID(purchasableId);
-            if (null == product)
-            {
-                m_Logger.LogFormat(LogType.Warning, "Unable to purchase unknown product with id: {0}", purchasableId);
-            }
-
-            InitiatePurchase(product, developerPayload);
+            m_Store.Purchase(product.definition, developerPayload: "");
         }
 
         /// <summary>
@@ -77,19 +45,12 @@ namespace UnityEngine.Purchasing
         /// </summary>
         public void ConfirmPendingPurchase(Product product)
         {
-            if (null == product)
-            {
-                m_Logger.LogIAPError("Unable to confirm purchase with null Product");
-                return;
-            }
-
             if (string.IsNullOrEmpty(product.transactionID))
             {
-                m_Logger.LogIAPError("Unable to confirm purchase; Product has missing or empty transactionID");
+                UnityUtil.LogError("Unable to confirm purchase; Product has missing or empty transactionID");
                 return;
             }
 
-            if (useTransactionLog)
             {
                 m_TransactionLog.Record(product.transactionID);
             }
@@ -97,7 +58,7 @@ namespace UnityEngine.Purchasing
             m_Store.FinishTransaction(product.definition, product.transactionID);
         }
 
-        public ProductCollection products { get; private set; } = null!;
+        public ProductCollection products { get; }
 
         /// <summary>
         /// Called by our IStore when a purchase succeeds.
@@ -120,7 +81,6 @@ namespace UnityEngine.Purchasing
 
         void UpdateProductReceiptAndTransactionID(Product product, string? receipt, string transactionId)
         {
-            if (product != null)
             {
                 product.receipt = CreateUnifiedReceipt(receipt, transactionId);
                 product.transactionID = transactionId;
@@ -129,7 +89,6 @@ namespace UnityEngine.Purchasing
 
         public void OnAllPurchasesRetrieved(List<Product> purchasedProducts)
         {
-            if (products != null)
             {
                 foreach (var product in products.all)
                 {
@@ -190,11 +149,11 @@ namespace UnityEngine.Purchasing
                 var product = products.WithStoreSpecificID(description.productId);
                 if (null == product)
                 {
-                    m_Logger.LogFormat(LogType.Error, "Failed to purchase unknown product {0}", "productId:" + description.productId + " reason:" + description.reason + " message:" + description.message);
+                    UnityUtil.LogError("Failed to purchase unknown product {0}", "productId:" + description.productId + " reason:" + description.reason + " message:" + description.message);
                     return;
                 }
 
-                m_Logger.LogFormat(LogType.Warning, "onPurchaseFailedEvent({0})", "productId:" + product.definition.id + " message:" + description.message);
+                UnityUtil.LogWarning("onPurchaseFailedEvent({0})", "productId:" + product.definition.id + " message:" + description.message);
                 m_Listener?.OnPurchaseFailed(product, description);
             }
         }
@@ -228,12 +187,12 @@ namespace UnityEngine.Purchasing
 
         string CreateUnifiedReceipt(string? rawReceipt, string transactionId)
         {
-            return UnifiedReceiptFormatter.FormatUnifiedReceipt(rawReceipt, transactionId, m_StoreName);
+            return UnifiedReceiptFormatter.FormatUnifiedReceipt(rawReceipt, transactionId, m_StoreType);
         }
 
         void ProcessPurchaseOnStart()
         {
-            foreach (var product in products.set)
+            foreach (var product in products.all)
             {
                 if (!string.IsNullOrEmpty(product.receipt) && !string.IsNullOrEmpty(product.transactionID))
                 {
@@ -255,7 +214,7 @@ namespace UnityEngine.Purchasing
                 return;
             }
 
-            purchasesProcessedInSession.Add(product.transactionID);
+            purchasesProcessedInSession.Add(product.transactionID!);
 
             var p = new PurchaseEventArgs(product);
 
@@ -267,9 +226,9 @@ namespace UnityEngine.Purchasing
             }
         }
 
-        bool HasRecordedTransaction(string transactionId)
+        bool HasRecordedTransaction(string? transactionId)
         {
-            return useTransactionLog && m_TransactionLog.HasRecordOf(transactionId);
+            return m_TransactionLog.HasRecordOf(transactionId);
         }
 
         private bool initialized;
@@ -285,25 +244,19 @@ namespace UnityEngine.Purchasing
                 }
                 else
                 {
-                    var message = productCount == 0 ?
-                        "No product returned from the store." :
-                        "Products returned from the store don't match.";
                     m_Listener?.OnInitializeFailed(InitializationFailureReason.NoProductsAvailable,
-                        message);
+                        "No product returned from the store.");
                 }
             }
         }
 
-        internal void Initialize(StoreListenerProxy listener, ProductDefinition[] products)
+        internal void Initialize(IStoreListener listener)
         {
             m_Listener = listener;
             m_Store.Initialize(this);
 
-            var prods = products.Select(x => new Product(x, new ProductMetadata())).ToArray();
-            this.products = new ProductCollection(prods);
-
             // Start the initialisation process by fetching product metadata.
-            m_Store.RetrieveProducts(products);
+            m_Store.RetrieveProducts(products.definitions);
         }
     }
 }

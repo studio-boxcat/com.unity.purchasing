@@ -10,19 +10,19 @@ namespace UnityEngine.Purchasing
         readonly GooglePlayStoreService m_GooglePlayStoreService;
         readonly GoogleFetchPurchases m_GoogleFetchPurchases;
         IStoreCallback? m_StoreCallback;
-        readonly IGooglePlayConfigurationInternal m_GooglePlayConfigurationInternal;
+        readonly GooglePlayConfiguration m_GooglePlayConfiguration;
         readonly GooglePlayStoreExtensions m_GooglePlayStoreExtensions;
         bool m_HasInitiallyRetrievedProducts;
         bool m_RetrieveProductsFailed;
 
         internal GooglePlayStoreRetrieveProductsService(GooglePlayStoreService googlePlayStoreService,
             GoogleFetchPurchases googleFetchPurchases,
-            IGooglePlayConfigurationInternal googlePlayConfigurationInternal,
+            GooglePlayConfiguration googlePlayConfiguration,
             GooglePlayStoreExtensions googlePlayStoreExtensions)
         {
             m_GooglePlayStoreService = googlePlayStoreService;
             m_GoogleFetchPurchases = googleFetchPurchases;
-            m_GooglePlayConfigurationInternal = googlePlayConfigurationInternal;
+            m_GooglePlayConfiguration = googlePlayConfiguration;
             m_GooglePlayStoreExtensions = googlePlayStoreExtensions;
 
             m_HasInitiallyRetrievedProducts = false;
@@ -83,7 +83,7 @@ namespace UnityEngine.Purchasing
                 !m_HasInitiallyRetrievedProducts && !m_RetrieveProductsFailed)
             {
                 m_RetrieveProductsFailed = true;
-                m_GooglePlayConfigurationInternal.NotifyInitializationConnectionFailed();
+                m_GooglePlayConfiguration.NotifyInitializationConnectionFailed();
                 m_StoreCallback?.OnSetupFailed(InitializationFailureReason.PurchasingUnavailable, $"GoogleBillingResponseCode: {responseCode.ToString()}");
             }
         }
@@ -100,7 +100,7 @@ namespace UnityEngine.Purchasing
             {
                 foreach (var purchaseProduct in purchaseProducts)
                 {
-                    if (m_GooglePlayConfigurationInternal.DoesRetrievePurchasesExcludeDeferred() &&
+                    if (m_GooglePlayConfiguration.DoesRetrievePurchasesExcludeDeferred() &&
                         IsPurchasedProductDeferred(purchaseProduct))
                     {
                         continue;

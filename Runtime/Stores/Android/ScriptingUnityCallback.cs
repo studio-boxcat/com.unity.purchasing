@@ -9,32 +9,30 @@ namespace UnityEngine.Purchasing
     internal class ScriptingUnityCallback : IUnityCallback
     {
         private readonly IUnityCallback forwardTo;
-        private readonly UnityUtil util;
 
-        public ScriptingUnityCallback(IUnityCallback forwardTo, UnityUtil util)
+        public ScriptingUnityCallback(IUnityCallback forwardTo)
         {
             this.forwardTo = forwardTo;
-            this.util = util;
         }
 
         public void OnSetupFailed(string json)
         {
-            util.RunOnMainThread(() => forwardTo.OnSetupFailed(json));
+            UnityUtil.RunOnMainThread(() => forwardTo.OnSetupFailed(json));
         }
 
         public void OnProductsRetrieved(string json)
         {
-            util.RunOnMainThread(() => forwardTo.OnProductsRetrieved(json));
+            UnityUtil.RunOnMainThread(() => forwardTo.OnProductsRetrieved(json));
         }
 
         public void OnPurchaseSucceeded(string id, string receipt, string transactionID)
         {
-            util.RunOnMainThread(() => forwardTo.OnPurchaseSucceeded(id, receipt, transactionID));
+            UnityUtil.RunOnMainThread(() => forwardTo.OnPurchaseSucceeded(id, receipt, transactionID));
         }
 
         public void OnPurchaseFailed(string json)
         {
-            util.RunOnMainThread(() => forwardTo.OnPurchaseFailed(json));
+            UnityUtil.RunOnMainThread(() => forwardTo.OnPurchaseFailed(json));
         }
     }
 }

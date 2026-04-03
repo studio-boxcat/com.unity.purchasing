@@ -5,24 +5,21 @@ namespace UnityEngine.Purchasing
     class GooglePlayStore : IStore
     {
         readonly GooglePlayStoreRetrieveProductsService m_RetrieveProductsService;
-        readonly GooglePlayStorePurchaseService m_StorePurchaseService;
+        readonly GooglePlayStoreService m_StorePurchaseService;
         readonly GoogleFetchPurchases m_FetchPurchases;
         readonly GooglePlayStoreFinishTransactionService m_FinishTransactionService;
         readonly GooglePlayPurchaseCallback m_GooglePurchaseCallback;
-        readonly IGooglePlayStoreExtensionsInternal m_GooglePlayStoreExtensions;
-        readonly IGooglePlayConfigurationInternal m_GooglePlayConfigurationInternal;
-        readonly UnityUtil m_Util;
+        readonly GooglePlayStoreExtensions m_GooglePlayStoreExtensions;
+        readonly GooglePlayConfiguration m_GooglePlayConfigurationInternal;
 
         public GooglePlayStore(GooglePlayStoreRetrieveProductsService retrieveProductsService,
-            GooglePlayStorePurchaseService storePurchaseService,
+            GooglePlayStoreService storePurchaseService,
             GoogleFetchPurchases fetchPurchases,
             GooglePlayStoreFinishTransactionService transactionService,
             GooglePlayPurchaseCallback googlePurchaseCallback,
-            IGooglePlayConfigurationInternal googlePlayConfigurationInternal,
-            IGooglePlayStoreExtensionsInternal googlePlayStoreExtensions,
-            UnityUtil util)
+            GooglePlayConfiguration googlePlayConfigurationInternal,
+            GooglePlayStoreExtensions googlePlayStoreExtensions)
         {
-            m_Util = util;
             m_RetrieveProductsService = retrieveProductsService;
             m_StorePurchaseService = storePurchaseService;
             m_FetchPurchases = fetchPurchases;
@@ -38,7 +35,7 @@ namespace UnityEngine.Purchasing
         /// <param name="callback">The `IStoreCallback` will be call when receiving events from the google store</param>
         public virtual void Initialize(IStoreCallback callback)
         {
-            var scriptingStoreCallback = new ScriptingStoreCallback(callback, m_Util);
+            var scriptingStoreCallback = new ScriptingStoreCallback(callback);
             m_RetrieveProductsService.SetStoreCallback(scriptingStoreCallback);
             m_FetchPurchases.SetStoreCallback(scriptingStoreCallback);
             m_FinishTransactionService.SetStoreCallback(scriptingStoreCallback);
