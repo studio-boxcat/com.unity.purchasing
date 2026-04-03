@@ -3,10 +3,6 @@ namespace UnityEngine.Purchasing
     internal class AndroidJavaStore : INativeStore
     {
         private readonly AndroidJavaObject m_Store;
-        protected AndroidJavaObject GetStore()
-        {
-            return m_Store;
-        }
 
         public AndroidJavaStore(AndroidJavaObject store)
         {
