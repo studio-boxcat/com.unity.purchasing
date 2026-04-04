@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using AOT;
 using Google.MiniJSON;
+using Stores.Util;
 using UnityEngine.Purchasing.Extension;
 using UnityEngine.Purchasing.MiniJSON;
 using UnityEngine.Purchasing.Security;
@@ -40,7 +41,6 @@ namespace UnityEngine.Purchasing
         public AppleStoreImpl()
         {
             s_Instance = this;
-            m_ProductDescriptionsDeserializer = new AppleJsonProductDescriptionsDeserializer();
         }
 
         public void SetNativeStore(INativeAppleStore apple)
@@ -143,7 +143,7 @@ namespace UnityEngine.Purchasing
             // base.OnProductsRetrieved (json); // Don't call this, because we want to enrich the products first
 
             // get product list
-            var productDescriptions = m_ProductDescriptionsDeserializer.DeserializeProductDescriptions(json);
+            var productDescriptions = JsonProductDescriptionsDeserializer.DeserializeProductDescriptions(json);
             List<ProductDescription>? finalProductDescriptions = null;
 
             m_ProductsJson = json;

@@ -6,12 +6,12 @@ using UnityEngine.Purchasing.Extension;
 
 namespace Stores.Util
 {
-    class JsonProductDescriptionsDeserializer
+    static class JsonProductDescriptionsDeserializer
     {
         // XXX: PlayPassEntitlement considers the localized price 0 is a eligibility requirement. use 99.99 as a fallback to avoid eligibility issues.
         internal const decimal FallbackPriceForEntitlementSafety = 99.99m;
 
-        public List<ProductDescription> DeserializeProductDescriptions(string json)
+        public static List<ProductDescription> DeserializeProductDescriptions(string json)
         {
             var objects = (List<object>)MiniJson.JsonDecode(json);
             var result = new List<ProductDescription>();
@@ -30,7 +30,7 @@ namespace Stores.Util
             return result;
         }
 
-        internal virtual ProductMetadata DeserializeMetadata(Dictionary<string, object> data)
+        internal static ProductMetadata DeserializeMetadata(Dictionary<string, object> data)
         {
             // We are seeing an occasional exception when converting a string to a decimal here. It may be related to
             // a mono bug with certain cultures' number formatters: https://bugzilla.xamarin.com/show_bug.cgi?id=4814

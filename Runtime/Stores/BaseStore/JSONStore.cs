@@ -13,16 +13,6 @@ namespace UnityEngine.Purchasing
         protected IStoreCallback unity;
         private INativeStore m_Store;
 
-        protected JsonProductDescriptionsDeserializer m_ProductDescriptionsDeserializer;
-
-        /// <summary>
-        /// No arg constructor due to cyclical dependency on IUnityCallback.
-        /// </summary>
-        public JSONStore()
-        {
-            m_ProductDescriptionsDeserializer = new JsonProductDescriptionsDeserializer();
-        }
-
         public void SetNativeStore(INativeStore native)
         {
             m_Store = native;
@@ -60,7 +50,7 @@ namespace UnityEngine.Purchasing
         public virtual void OnProductsRetrieved(string json)
         {
             // NB: AppleStoreImpl overrides this completely and does not call the base.
-            unity.OnProductsRetrieved(m_ProductDescriptionsDeserializer.DeserializeProductDescriptions(json));
+            unity.OnProductsRetrieved(JsonProductDescriptionsDeserializer.DeserializeProductDescriptions(json));
         }
 
         public virtual void OnPurchaseSucceeded(string id, string receipt, string transactionID)
