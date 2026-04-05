@@ -1,5 +1,3 @@
-using System.Collections.Generic;
-
 namespace UnityEngine.Purchasing
 {
     /// <summary>
@@ -15,15 +13,6 @@ namespace UnityEngine.Purchasing
         public AmazonAppStoreStoreExtensions(AndroidJavaObject a)
         {
             android = a;
-        }
-
-        /// <summary>
-        /// To use for Amazon’s local Sandbox testing app, generate a JSON description of your product catalog on the device’s SD card.
-        /// </summary>
-        /// <param name="products">Products to add to the testing app JSON.</param>
-        public void WriteSandboxJSON(HashSet<ProductDefinition> products)
-        {
-            android.Call("writeSandboxJSON", JSONSerializer.SerializeProductDefs(products));
         }
 
         /// <summary>
