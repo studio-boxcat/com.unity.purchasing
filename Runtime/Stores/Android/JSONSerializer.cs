@@ -1,5 +1,7 @@
 using System;
 using System.Collections.Generic;
+using System.Text;
+using UnityEngine.Assertions;
 using UnityEngine.Purchasing.Extension;
 
 namespace UnityEngine.Purchasing
@@ -24,18 +26,26 @@ namespace UnityEngine.Purchasing
     {
         public static string SerializeProductDef(ProductDefinition product)
         {
-            return MiniJson.JsonEncode(EncodeProductDef(product));
+            var sb = new StringBuilder();
+            EncodeProductDef(product, sb);
+            return sb.ToString();
         }
 
-        public static string SerializeProductDefs(IEnumerable<ProductDefinition> products)
+        public static string SerializeProductDefs(ProductDefinition[] products)
         {
-            var result = new List<object>();
-            foreach (var product in products)
-            {
-                result.Add(EncodeProductDef(product));
-            }
+            if (products.Length is 0)
+                return "[]";
 
-            return MiniJson.JsonEncode(result);
+            var sb = new StringBuilder();
+            sb.Append('[');
+            for (var index = 0; index < products.Length; index++)
+            {
+                var product = products[index];
+                if (index > 0) sb.Append(',');
+                EncodeProductDef(product, sb);
+            }
+            sb.Append(']');
+            return sb.ToString();
         }
 
         public static Dictionary<string, string> DeserializeSubscriptionDescriptions(string json)
@@ -122,9 +132,32 @@ namespace UnityEngine.Purchasing
             return message + storeSpecificErrorCode;
         }
 
-        private static Dictionary<string, object> EncodeProductDef(ProductDefinition product)
+        private static void EncodeProductDef(ProductDefinition product, StringBuilder sb)
         {
-            return new Dictionary<string, object> { { "id", product.id }, { "storeSpecificId", product.storeSpecificId }, { "type", product.type.ToString() } };
+            // do the manual JSON encoding here to avoid the overhead.
+            AssertJsonString(product.id);
+            AssertJsonString(product.storeSpecificId);
+            sb.Append("{\"id\":\"").Append(product.id)
+                .Append("\",\"storeSpecificId\":\"").Append(product.storeSpecificId)
+                .Append("\",\"type\":\"").Append(ProductTypeToString(product.type))
+                .Append("\"}");
+            return;
+
+            static void AssertJsonString(string str)
+            {
+                Assert.IsFalse(str.Contains('\"'), $"String {str} contains a double quote, which may cause JSON encoding issues.");
+            }
+
+            static string ProductTypeToString(ProductType type)
+            {
+                return type switch
+                {
+                    ProductType.Consumable => nameof(ProductType.Consumable),
+                    ProductType.NonConsumable => nameof(ProductType.NonConsumable),
+                    ProductType.Subscription => nameof(ProductType.Subscription),
+                    _ => throw new ArgumentOutOfRangeException(nameof(type), $"Unexpected product type: {type}")
+                };
+            }
         }
     }
 }
