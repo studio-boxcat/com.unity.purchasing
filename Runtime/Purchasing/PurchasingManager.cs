@@ -14,17 +14,20 @@ namespace UnityEngine.Purchasing
     {
         private readonly AppStore m_StoreType;
         private readonly IStore m_Store;
-        private IStoreListener? m_Listener;
+        private readonly IStoreListener? m_Listener;
         private readonly TransactionLog m_TransactionLog = new(Application.persistentDataPath);
         private readonly HashSet<string> purchasesProcessedInSession = new();
 
-        internal PurchasingManager(AppStore storeType, IStore store, ProductDefinition[] products)
+        internal PurchasingManager(AppStore storeType, IStore store, ProductDefinition[] products, IStoreListener? listener)
         {
             Assert.AreEqual(products.Length, products.Select(p => p.id).Distinct().Count(), "Product ids must be unique");
 
             m_StoreType = storeType;
             m_Store = store;
             this.products = new ProductCollection(products);
+            m_Listener = listener;
+
+            m_Store.Initialize(this);
         }
 
         public void InitiatePurchase(Product product)
@@ -250,11 +253,8 @@ namespace UnityEngine.Purchasing
             }
         }
 
-        internal void Initialize(IStoreListener listener)
+        internal void Initialize()
         {
-            m_Listener = listener;
-            m_Store.Initialize(this);
-
             // Start the initialisation process by fetching product metadata.
             m_Store.RetrieveProducts(products.definitions);
         }
