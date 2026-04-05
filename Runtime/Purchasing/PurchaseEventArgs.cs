@@ -1,10 +1,12 @@
+#nullable enable
+
 namespace UnityEngine.Purchasing
 {
     /// <summary>
     /// A purchase that succeeded, including the purchased product
     /// along with its purchase receipt.
     /// </summary>
-    public class PurchaseEventArgs
+    public struct PurchaseEventArgs
     {
         internal PurchaseEventArgs(Product purchasedProduct)
         {
@@ -14,6 +16,6 @@ namespace UnityEngine.Purchasing
         /// <summary>
         /// The product which was purchased successfully.
         /// </summary>
-        public Product purchasedProduct { get; private set; }
+        public readonly Product purchasedProduct;
     }
 }
