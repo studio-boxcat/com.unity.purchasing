@@ -185,6 +185,8 @@ namespace UnityEngine.Purchasing
             // Fire our initialisation events if this is a first poll.
             CheckForInitialization(products.Count);
 
+            _retrievalVersion++;
+
             ProcessPurchaseOnStart();
         }
 
@@ -256,6 +258,23 @@ namespace UnityEngine.Purchasing
         internal void Initialize()
         {
             // Start the initialisation process by fetching product metadata.
+            m_Store.RetrieveProducts(products.definitions);
+        }
+
+        // Incremented only on successful OnProductsRetrieved, never on failure.
+        // Callers poll this to detect completion; timeout handles failure/hang cases.
+        // This avoids promise-based callbacks which can hang permanently on Google Play
+        // when billing disconnects post-init (OnRetrieveProductsFailed silently drops
+        // failures after initial initialization).
+        private int _retrievalVersion;
+        internal int RetrievalVersion => _retrievalVersion;
+
+        /// <summary>
+        /// Fire-and-forget re-fetch of product metadata from the store.
+        /// Poll <see cref="RetrievalVersion"/> to detect completion.
+        /// </summary>
+        internal void RefreshProducts()
+        {
             m_Store.RetrieveProducts(products.definitions);
         }
     }
