@@ -13,7 +13,7 @@ namespace UnityEngine.Purchasing
         protected IStoreCallback unity;
         private INativeStore m_Store;
 
-        public void SetNativeStore(INativeStore native)
+        public virtual void SetNativeStore(INativeStore native)
         {
             m_Store = native;
         }

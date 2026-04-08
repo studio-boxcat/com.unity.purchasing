@@ -43,9 +43,10 @@ namespace UnityEngine.Purchasing
             s_Instance = this;
         }
 
-        public void SetNativeStore(INativeAppleStore apple)
+        public override void SetNativeStore(INativeStore native)
         {
-            base.SetNativeStore(apple);
+            base.SetNativeStore(native);
+            var apple = (INativeAppleStore)native;
             m_Native = apple;
             apple.SetUnityPurchasingCallback(MessageCallback);
         }
