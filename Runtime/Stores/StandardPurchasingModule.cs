@@ -131,7 +131,9 @@ namespace UnityEngine.Purchasing
             var nativeStore = appStore switch
             {
                 AppStore.AppleAppStore => (INativeStore)new iOSStoreBindings(),
+#if !UNITY_STANDALONE_OSX || UNITY_EDITOR
                 AppStore.MacAppStore => new OSXStoreBindings(),
+#endif
                 _ => throw new ArgumentOutOfRangeException(nameof(appStore), appStore, null)
             };
             store.SetNativeStore(nativeStore);
