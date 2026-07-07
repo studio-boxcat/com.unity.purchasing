@@ -22,7 +22,6 @@ namespace UnityEngine.Purchasing
             return appStore switch
             {
                 AppStore.GooglePlay => InstantiateGoogleStore(out extension),
-                AppStore.AmazonAppStore => InstantiateAmazonStore(out extension),
                 AppStore.AppleAppStore or AppStore.MacAppStore => InstantiateApple(appStore, out extension),
                 _ => new FakeStore()
             };
@@ -105,24 +104,6 @@ namespace UnityEngine.Purchasing
             googlePlayStoreService.InitConnectionWithGooglePlay();
 
             return googlePlayStoreService;
-        }
-
-        private static IStore InstantiateAmazonStore(out object extension)
-        {
-            var store = new JSONStore();
-
-            // Switch Android callbacks to the scripting thread, via ScriptingUnityCallback.
-            var proxy = new JavaBridge(new ScriptingUnityCallback(store));
-            using var pluginClass = new AndroidJavaClass("com.unity.purchasing.amazon.AmazonPurchasing");
-            var instance = pluginClass.CallStatic<AndroidJavaObject>("instance", proxy);
-            INativeStore nativeStore = new AndroidJavaStore(instance);
-
-            // Hook up our amazon specific functionality.
-            extension = new AmazonAppStoreStoreExtensions(instance);
-
-            store.SetNativeStore(nativeStore);
-
-            return store;
         }
 
         private static IStore InstantiateApple(AppStore appStore, out object extension)

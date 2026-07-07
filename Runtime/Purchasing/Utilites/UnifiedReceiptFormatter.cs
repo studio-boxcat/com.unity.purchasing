@@ -19,7 +19,6 @@ namespace UnityEngine.Purchasing
                 return appStore switch
                 {
                     AppStore.GooglePlay => StoreNames.GooglePlay,
-                    AppStore.AmazonAppStore => StoreNames.AmazonApps,
                     AppStore.AppleAppStore => StoreNames.AppleAppStore,
                     AppStore.MacAppStore => StoreNames.MacAppStore,
                     AppStore.fake => StoreNames.Fake,

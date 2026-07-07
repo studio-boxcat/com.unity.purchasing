@@ -42,8 +42,7 @@ namespace UnityEngine.Purchasing
 
     /// <summary>
     /// Use to query in-app purchasing subscription product information, and upgrade subscription products.
-    /// Supports the Apple App Store, Google Play store, and Amazon AppStore.
-    /// Note Amazon support offers no subscription duration information.
+    /// Supports the Apple App Store and Google Play store.
     /// Note expiration dates may become invalid after updating subscriptions between two types of duration.
     /// </summary>
     /// <seealso cref="IAppleExtensions.GetIntroductoryPriceDictionary"/>
@@ -216,10 +215,6 @@ namespace UnityEngine.Purchasing
                             }
                             return getAppleAppStoreSubInfo(payload, productId);
                         }
-                        case StoreNames.AmazonApps:
-                        {
-                            return getAmazonAppStoreSubInfo(productId);
-                        }
                         default:
                         {
                             throw new StoreSubscriptionInfoNotSupportedException("Store not supported: " + store);
@@ -232,10 +227,6 @@ namespace UnityEngine.Purchasing
 
         }
 
-        private SubscriptionInfo getAmazonAppStoreSubInfo(string productId)
-        {
-            return new SubscriptionInfo(productId);
-        }
         private SubscriptionInfo getAppleAppStoreSubInfo(string payload, string productId)
         {
 
@@ -632,26 +623,6 @@ namespace UnityEngine.Purchasing
 
             remainedTime = subscriptionExpireDate.Subtract(DateTime.UtcNow);
             sku_details = skuDetails;
-        }
-
-        /// <summary>
-        /// Especially crucial values relating to subscription products.
-        /// Note this is intended to be called internally.
-        /// </summary>
-        /// <param name="productId">This subscription's product identifier</param>
-        public SubscriptionInfo(string productId)
-        {
-            this.productId = productId;
-            is_subscribed = Result.True;
-            is_expired = Result.False;
-            is_cancelled = Result.Unsupported;
-            is_free_trial = Result.Unsupported;
-            is_auto_renewing = Result.Unsupported;
-            remainedTime = TimeSpan.MaxValue;
-            is_introductory_price_period = Result.Unsupported;
-            introductory_price_period = TimeSpan.MaxValue;
-            introductory_price = null;
-            introductory_price_cycles = 0;
         }
 
         /// <summary>

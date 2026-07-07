@@ -11,11 +11,6 @@ namespace UnityEngine.Purchasing
         GooglePlay, //<= Map to AndroidStore. First Android store. In AppStoreMeta.
 
         /// <summary>
-        /// Amazon App Store.
-        /// </summary>
-        AmazonAppStore, //
-
-        /// <summary>
         /// MacOS App Store.
         /// </summary>
         MacAppStore,
