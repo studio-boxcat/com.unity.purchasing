@@ -1,10 +1,11 @@
 fileFormatVersion: 2
 guid: 4436525e323b4824b8dc905144c38be0
-folderAsset: yes
-timeCreated: 2154071
-licenseType: Pro
-DefaultImporter:
+MonoImporter:
   externalObjects: {}
-  userData:
-  assetBundleName:
-  assetBundleVariant:
+  serializedVersion: 2
+  defaultReferences: []
+  executionOrder: 0
+  icon: {instanceID: 0}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
