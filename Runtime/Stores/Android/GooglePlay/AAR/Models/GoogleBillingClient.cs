@@ -67,6 +67,22 @@ namespace UnityEngine.Purchasing.Models
             return s_AcknowledgePurchaseParamsClass;
         }
 
+        const string k_AndroidQueryPurchasesParamsClassName = "com.android.billingclient.api.QueryPurchasesParams";
+        static AndroidJavaClass s_QueryPurchasesParamsClass;
+        static AndroidJavaClass GetQueryPurchasesParamsClass()
+        {
+            s_QueryPurchasesParamsClass ??= new AndroidJavaClass(k_AndroidQueryPurchasesParamsClassName);
+            return s_QueryPurchasesParamsClass;
+        }
+
+        const string k_AndroidPendingPurchasesParamsClassName = "com.android.billingclient.api.PendingPurchasesParams";
+        static AndroidJavaClass s_PendingPurchasesParamsClass;
+        static AndroidJavaClass GetPendingPurchasesParamsClass()
+        {
+            s_PendingPurchasesParamsClass ??= new AndroidJavaClass(k_AndroidPendingPurchasesParamsClassName);
+            return s_PendingPurchasesParamsClass;
+        }
+
         const string k_AndroidBillingClientClassName = "com.android.billingclient.api.BillingClient";
         static AndroidJavaClass s_BillingClientClass;
         static AndroidJavaClass GetBillingClientClass()
@@ -83,8 +99,19 @@ namespace UnityEngine.Purchasing.Models
         {
             using var builder = GetBillingClientClass().CallStatic<AndroidJavaObject>("newBuilder", AndroidApplication.UnityActivity);
             builder.Call<AndroidJavaObject>("setListener", googlePurchaseUpdatedListener).Dispose();
-            builder.Call<AndroidJavaObject>("enablePendingPurchases").Dispose();
+            using var pendingPurchasesParams = MakePendingPurchasesParams();
+            builder.Call<AndroidJavaObject>("enablePendingPurchases", pendingPurchasesParams).Dispose();
             m_BillingClient = builder.Call<AndroidJavaObject>("build");
+        }
+
+        // Billing 8 removed the no-arg enablePendingPurchases(). One-time products alone is its
+        // documented equivalent; enablePrepaidPlans() would be a behaviour change, and no product
+        // here is a prepaid subscription plan.
+        static AndroidJavaObject MakePendingPurchasesParams()
+        {
+            using var builder = GetPendingPurchasesParamsClass().CallStatic<AndroidJavaObject>("newBuilder");
+            builder.Call<AndroidJavaObject>("enableOneTimeProducts").Dispose();
+            return builder.Call<AndroidJavaObject>("build");
         }
 
         public void SetObfuscationAccountId(string obfuscationAccountId)
@@ -117,10 +144,19 @@ namespace UnityEngine.Purchasing.Models
             return (GoogleBillingConnectionState)m_BillingClient.Call<int>("getConnectionState");
         }
 
-        public void QueryPurchasesAsync(string skuType, Action<GoogleBillingResult, IEnumerable<AndroidJavaObject>> onQueryPurchasesResponse)
+        public void QueryPurchasesAsync(string productType, Action<GoogleBillingResult, IEnumerable<AndroidJavaObject>> onQueryPurchasesResponse)
         {
             var listener = new GooglePurchasesResponseListener(onQueryPurchasesResponse);
-            m_BillingClient.Call("queryPurchasesAsync", skuType, listener);
+            // Billing 8 removed the (String, PurchasesResponseListener) overload.
+            using var queryPurchasesParams = MakeQueryPurchasesParams(productType);
+            m_BillingClient.Call("queryPurchasesAsync", queryPurchasesParams, listener);
+        }
+
+        static AndroidJavaObject MakeQueryPurchasesParams(string productType)
+        {
+            using var builder = GetQueryPurchasesParamsClass().CallStatic<AndroidJavaObject>("newBuilder");
+            builder.Call<AndroidJavaObject>("setProductType", productType).Dispose();
+            return builder.Call<AndroidJavaObject>("build");
         }
 
         public void QueryProductDetailsAsync(List<string> products, string type,

@@ -31,6 +31,9 @@ namespace UnityEngine.Purchasing
             }
             catch (Exception ex)
             {
+                // Logged, not rethrown: the caller is a JNI listener running on UnityUtil's
+                // main-thread pump, which drops the rest of the batch if an action throws.
+                UnityUtil.LogException(ex);
             }
         }
     }

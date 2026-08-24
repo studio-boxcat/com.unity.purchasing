@@ -73,6 +73,10 @@ namespace UnityEngine.Purchasing
             // DeveloperError is only a possible recoverable state because of this
             // https://github.com/android/play-billing-samples/issues/337
             // usually works like a charm next acknowledge
+            //
+            // Billing 9 reports a system-blocked Play Store as BillingUnavailable where 7 reported
+            // FatalError, so that case stops retrying here. Deliberate — a blocked store does not
+            // unblock inside a five-attempt burst, and BillingUnavailable stays off this list.
             return billingResult.responseCode == GoogleBillingResponseCode.ServiceUnavailable ||
                    billingResult.responseCode == GoogleBillingResponseCode.DeveloperError ||
                    billingResult.responseCode == GoogleBillingResponseCode.FatalError;
