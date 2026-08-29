@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 using UnityEngine.Purchasing;
-
+#if UNITY_EDITOR
 namespace UnityEditor.Purchasing
 {
     /// <summary>
@@ -49,3 +49,4 @@ namespace UnityEditor.Purchasing
         }
     }
 }
+#endif

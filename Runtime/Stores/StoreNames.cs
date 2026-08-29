@@ -9,5 +9,7 @@ namespace UnityEngine.Purchasing
         public const string GooglePlay = "GooglePlay";
         public const string AmazonApps = "AmazonApps";
         public const string Fake = "fake";
+        public const string Nintendo = "NintendoStore";
+        public const string Steam = "SteamStore";
     }
 }

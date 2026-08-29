@@ -24,6 +24,12 @@ namespace UnityEngine.Purchasing
                 AppStore.GooglePlay => InstantiateGoogleStore(out extension),
                 AppStore.AmazonAppStore => InstantiateAmazonStore(out extension),
                 AppStore.AppleAppStore or AppStore.MacAppStore => InstantiateApple(appStore, out extension),
+#if UNITY_SWITCH
+                AppStore.NintendoStore => new NintendoStoreImpl(),
+#endif
+#if UNITY_STANDALONE && !DISABLESTEAMWORKS
+                AppStore.SteamStore => new SteamStoreImpl(),
+#endif
                 _ => new FakeStore()
             };
         }

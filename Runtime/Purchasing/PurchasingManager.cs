@@ -1,5 +1,6 @@
 // ReSharper disable InconsistentNaming
 #nullable enable
+using Facebook.Unity;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine.Assertions;
@@ -34,6 +35,7 @@ namespace UnityEngine.Purchasing
         {
             if (!product.availableToPurchase)
             {
+                Debug.LogError("FAIL TO TRY GET PRODUCT");
                 m_Listener?.OnPurchaseFailed(product, new PurchaseFailureDescription(product.definition.id, PurchaseFailureReason.ProductUnavailable,
                     "No products were found when fetching from the store"));
                 return;
@@ -166,8 +168,11 @@ namespace UnityEngine.Purchasing
         /// </summary>
         public void OnProductsRetrieved(List<ProductDescription> products)
         {
+            Debug.LogError($"[STEAM DLC] ON PRODUCTS RETRIVE {products.Count}");
             foreach (var product in products)
             {
+                Debug.LogError($"[STEAM DLC] TRY TO OBTAIN PRODUCTS {product.storeSpecificId}");
+
                 var matchedProduct = this.products.WithStoreSpecificID(product.storeSpecificId);
                 if (null == matchedProduct)
                     continue;
@@ -243,6 +248,10 @@ namespace UnityEngine.Purchasing
             if (!initialized)
             {
                 initialized = true;
+#if UNITY_SWITCH || UNITY_STANDALONE
+                m_Listener?.OnInitialized(this);
+                return;
+#endif
                 if (productCount > 0)
                 {
                     m_Listener?.OnInitialized(this);

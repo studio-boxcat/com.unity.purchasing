@@ -26,6 +26,16 @@ namespace UnityEngine.Purchasing
         AppleAppStore,
 
         /// <summary>
+        /// Nitendo Switch Store
+        /// </summary>
+        NintendoStore,
+
+        /// <summary>
+        /// PC Steam Store
+        /// </summary>
+        SteamStore,
+
+        /// <summary>
         /// A fake store used for testing and Play-In-Editor.
         /// </summary>
         fake

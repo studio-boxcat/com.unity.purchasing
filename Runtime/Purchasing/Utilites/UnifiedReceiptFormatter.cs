@@ -23,6 +23,8 @@ namespace UnityEngine.Purchasing
                     AppStore.AppleAppStore => StoreNames.AppleAppStore,
                     AppStore.MacAppStore => StoreNames.MacAppStore,
                     AppStore.fake => StoreNames.Fake,
+                    AppStore.NintendoStore => StoreNames.Nintendo,
+                    AppStore.SteamStore => StoreNames.Steam,
                     _ => throw new NotSupportedException("Unsupported store: " + appStore)
                 };
             }
